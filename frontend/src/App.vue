@@ -29,5 +29,9 @@ export default defineComponent({
 
 </script>
 
-<style scoped>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@200;400;700&display=swap');
+body {
+  font-family: 'Nunito', sans-serif !important;
+}
 </style>
