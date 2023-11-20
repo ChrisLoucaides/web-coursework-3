@@ -1,10 +1,24 @@
+from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse, HttpRequest
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
+
+from .forms import SignupForm
 from .models import ArticleComment
 from .serialisers import CommentReadSerialiser, CommentWriteSerialiser
 from rest_framework import status
+
+
+def user_signup(request):
+    if request.method == 'POST':
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            form.save()
+            # return redirect('login')
+    else:
+        form = SignupForm()
+    return render(request, 'signup.html', {'form': form})
 
 
 def main_spa(request: HttpRequest) -> HttpResponse:
@@ -47,4 +61,3 @@ class CommentsViewSet(ModelViewSet):
         serialiser.save()
 
         return Response(serialiser.data, status=status.HTTP_201_CREATED)
-

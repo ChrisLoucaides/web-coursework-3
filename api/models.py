@@ -9,7 +9,7 @@ class SiteUser(AbstractUser):
     profile_picture = models.ImageField()
     date_of_birth = models.DateField()
 
-    REQUIRED_FIELDS = ['profile_picture', 'date_of_birth']
+    REQUIRED_FIELDS = ['email', 'profile_picture', 'date_of_birth']
 
 
 class ArticleComment(models.Model):
