@@ -1,4 +1,4 @@
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render, redirect
 from rest_framework.viewsets import ModelViewSet
@@ -10,12 +10,13 @@ from .serialisers import CommentReadSerialiser, CommentWriteSerialiser
 from rest_framework import status
 
 
-def user_signup(request):
+def user_signup(request): # TODO WEB-2: add docstring
     if request.method == 'POST':
-        form = SignupForm(request.POST)
+        form = SignupForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            # return redirect('login')
+            user = form.save()
+            login(request, user)
+            return redirect('home')  # TODO WEB-2: Replace with our homepage path
     else:
         form = SignupForm()
     return render(request, 'signup.html', {'form': form})

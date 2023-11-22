@@ -1,18 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Signup</title>
+{% extends 'base.html' %}
 
-</head>
-<body>
-
-<h1>Signup</h1>
-<form method="POST">
+{% block content %}
+  <h2>Sign Up</h2>
+  <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Signup</button>
-{#    <a href="{% url 'login' %}">Already have account?</a>#}
-</form>
-</body>
-</html>
+    <button type="submit">Sign Up</button>
+  </form>
+{% endblock %}

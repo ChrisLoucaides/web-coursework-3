@@ -5,6 +5,10 @@ from api.models import SiteUser
 
 
 class SignupForm(UserCreationForm):
+    email = forms.EmailField(max_length=254, help_text='Required. Enter a valid email address.')
+    date_of_birth = forms.DateField(help_text='Required. Format: YYYY-MM-DD')
+    profile_picture = forms.ImageField(required=False)
+
     class Meta:
         model = SiteUser
-        fields = ['email', 'date_of_birth']
+        fields = ('username', 'email', 'password1', 'password2', 'date_of_birth', 'profile_picture')
