@@ -7,6 +7,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import MainPage from '../pages/MainPage.vue';
 import OtherPage from '../pages/OtherPage.vue';
 import TestCommentsPage from '../pages/TestCommentPage.vue';
+import TestArticlePage from '../pages/TestArticlePage.vue';
 
 let base = (import.meta.env.MODE == 'development') ? import.meta.env.BASE_URL : ''
 
@@ -19,6 +20,7 @@ const router = createRouter({
         { path: '/', name: 'Main Page', component: MainPage },
         { path: '/other/', name: 'Other Page', component: OtherPage },
         { path: '/testing/comments', name: 'Testing Comments page', component: TestCommentsPage },
+        { path: '/testing/articles', name: 'Testing articles page', component: TestArticlePage },
     ]
 })
 
