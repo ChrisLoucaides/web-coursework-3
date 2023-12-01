@@ -1,12 +1,25 @@
 <template>
-  <div class="testCommentContainer">
-      <ArticleCommentView :comment="comment"/>
+  <div>
+    <div class="testCommentContainer">
+      <label>Fetch comments for article id:</label>
+      <input type="number" v-bind="articleId">
+      <button class="btn btn-primary" @click="fetchForArticle">Load</button>
+
+
+    </div>
+    <div class="comments">
+      <ArticleCommentView v-if="loading" :is-skeleton="true"/>
+      <ArticleCommentView v-for="comment in comments" :key="comment.id" :comment="comment"/>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .testCommentContainer {
-  outline: 1px solid red;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 }
 </style>
 
@@ -14,24 +27,31 @@
 import {defineComponent} from 'vue'
 import ArticleCommentView from "../components/ArticleCommentView.vue";
 import ArticleComment from "../lib/models/ArticleComment.ts";
+import API from "../lib/utils/api.ts";
 
 export default defineComponent({
   name: "TestCommentPage.vue",
   components: {ArticleCommentView},
   data() {
     return {
-      comment: {} as ArticleComment
+      comments: [] as ArticleComment[],
+      articleId: 1,
+      loading: false,
     }
   },
-  mounted() {
-    this.comment = {
-      id: 1,
-      comment_text: 'Test',
-      created_date: new Date(),
-      parent_comment: null,
-      replies: [],
-      user: {profile_picture: '', username: 'TestUser'}
-    };
+  methods: {
+    async fetchForArticle() {
+      this.loading = true;
+      this.comments = [];
+      if (this.articleId) {
+        setTimeout(async () => {
+          this.comments = await API.fetchCommentsForArticle(this.articleId);
+          this.loading = false;
+        }, 1500);
+      } else {
+        this.comments = [];
+      }
+    }
   }
 })
 </script>

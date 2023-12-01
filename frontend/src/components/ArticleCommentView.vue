@@ -1,30 +1,6 @@
-<template>
-  <div class="comment">
-    <div class="comment-side">
-      <img
-          src="https://static.vecteezy.com/system/resources/previews/007/404/147/original/cute-penguin-sleeping-cartoon-icon-illustration-animal-love-icon-concept-isolated-premium-flat-cartoon-style-vector.jpg"
-          alt="user profile picture"/>
-    </div>
-    <div class="comment-content">
-      <div class="user-details">
-        <p class="username">{{ comment.user?.username }}</p>
-        <p class="date">{{ displayDate }}</p>
-      </div>
-      <span>{{ comment.comment_text }}</span>
-      <div class="comment-actions">
-        <button>Reply</button>
-        <button>Edit</button>
-        <button>Delete</button>
-      </div>
-    </div>
-
-  </div>
-</template>
-
 <style scoped lang="scss">
 
 .comment {
-  outline: 1px solid blue;
   display: flex;
   flex-direction: row;
 }
@@ -32,9 +8,11 @@
 .comment-side {
   display: flex;
   flex-direction: column;
-  margin-right: 1rem;
+  margin-right: 0.75rem;
 
-  img {
+  align-items: center;
+
+  .profile-img {
     width: 3rem;
     height: 3rem;
     border-radius: 1.5rem;
@@ -72,6 +50,11 @@
     color: gray;
     margin: 0;
   }
+
+  .bi-pencil {
+    font-size: 0.6rem;
+    line-height: 0.8rem;
+  }
 }
 
 .comment-actions {
@@ -91,23 +74,112 @@
     font-size: 0.8rem;
   }
 }
+
+.replies {
+  margin-top: 1rem;
+}
+
+.vl {
+  background-color: gray;
+  border-radius: 0.2rem;
+  height: 100%;
+  width: 0.15rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
 </style>
+
+<template>
+  <div v-if="isSkeleton" class="comment placeholder-glow">
+    <div class="comment-side">
+      <div class="placeholder profile-img"></div>
+    </div>
+    <div class="comment-content">
+      <div class="user-details">
+        <span class="placeholder col-1"></span>
+        <span class="placeholder col-1"></span>
+      </div>
+
+    <span class="placeholder col-4"></span>
+
+    </div>
+  </div>
+
+
+  <div v-if="!isSkeleton && comment" class="comment">
+    <div class="comment-side">
+      <img
+          class="profile-img"
+          src="https://static.vecteezy.com/system/resources/previews/007/404/147/original/cute-penguin-sleeping-cartoon-icon-illustration-animal-love-icon-concept-isolated-premium-flat-cartoon-style-vector.jpg"
+          alt="user profile picture"/>
+      <div v-if="comment.replies?.length > 0" class="vl"/>
+    </div>
+    <div class="comment-content">
+      <div class="user-details">
+        <p class="username">{{ user?.username }}</p>
+        <p class="date">{{ displayDate }}</p>
+        <i v-if="comment.updated_date" class="bi-pencil" data-bs-toggle="tooltip" data-bs-placement="top"
+           :data-bs-title="`Edited at ${comment.updated_date}`"></i>
+
+      </div>
+      <span>{{ comment.comment_text }}</span>
+      <div class="comment-actions">
+        <button @click="toggleReplyForm">{{ replyFormOpen ? 'Cancel' : 'Reply' }}</button>
+        <button>Edit</button>
+        <button>Delete</button>
+      </div>
+
+      <PostCommentView v-if="replyFormOpen" @postComment="postComment"/>
+
+      <div class="replies">
+        <ArticleCommentView v-for="reply in comment.replies ?? []" :key="reply.id" :comment="reply"/>
+      </div>
+    </div>
+
+  </div>
+</template>
 
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
 import ArticleComment from "../lib/models/ArticleComment";
+import {Tooltip} from "bootstrap";
+import PostCommentView from "../components/PostCommentView.vue";
+import User from "../lib/models/User.ts";
 
 export default defineComponent({
   name: "ArticleCommentView",
+  components: {PostCommentView},
   props: {
     comment: {
       type: Object as PropType<ArticleComment>,
-      required: true
+    },
+    isSkeleton: {
+      type: Boolean,
+    }
+  },
+  data() {
+    return {
+      replyFormOpen: false
     }
   },
   computed: {
     displayDate(): string {
       return "Now";
+    },
+    user(): User {
+      return this.comment?.user as User;
+    }
+  },
+  mounted() {
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    [...tooltipTriggerList].map(tooltipTriggerEl => new Tooltip(tooltipTriggerEl));
+  },
+  methods: {
+    toggleReplyForm() {
+      this.replyFormOpen = !this.replyFormOpen;
+    },
+    postComment(comment: ArticleComment) {
+      alert(comment.comment_text)
     }
   }
 })

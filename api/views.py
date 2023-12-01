@@ -40,7 +40,7 @@ class CommentsViewSet(ModelViewSet):
             return CommentWriteSerialiser
 
     def get_queryset(self):
-        article_id = self.kwargs['article_id']
+        article_id = self.kwargs.get('article_id')
         if 'pk' in self.kwargs:
             return ArticleComment.objects.filter(article_id=article_id)
         else:

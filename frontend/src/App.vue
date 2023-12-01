@@ -31,6 +31,8 @@ export default defineComponent({
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@200;400;700&display=swap');
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css");
+
 body {
   font-family: 'Nunito', sans-serif !important;
 }
