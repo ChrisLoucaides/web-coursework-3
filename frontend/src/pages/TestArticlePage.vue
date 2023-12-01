@@ -11,7 +11,7 @@
     outline: 1px solid red;
 }
 </style>
-  
+
 <script lang="ts">
 import { defineComponent } from 'vue'
 import ArticleView from "../components/ArticleView.vue";
@@ -28,9 +28,10 @@ export default defineComponent({
     mounted() {
         this.article = {
             id: 1,
-            title: 'MY TITLE',
-            content: 'MY ARTICLE CONTENT',
-            category: 'MY ARTICLE CATEGORY'
+            article_id: 50,
+            title_text: 'MY TITLE',
+            content_text: 'MY ARTICLE CONTENT',
+            category_text: 'MY ARTICLE CATEGORY',
         };
     }
 })
