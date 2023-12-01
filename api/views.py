@@ -5,9 +5,10 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 
 from .forms import SignupForm
-from .models import ArticleComment
+from .models import ArticleComment, Article
 from .serialisers import CommentReadSerialiser, CommentWriteSerialiser
 from rest_framework import status
+from django.http import JsonResponse
 
 
 def user_signup(request): # TODO WEB-2: add docstring
@@ -24,6 +25,14 @@ def user_signup(request): # TODO WEB-2: add docstring
 
 def main_spa(request: HttpRequest) -> HttpResponse:
     return render(request, 'api/spa/index.html', {})
+
+def getArticles(request):
+    if request.method == 'GET':
+        articles = list(Article.objects.values())
+        return JsonResponse(articles, safe=False, status=200)
+    else:
+        return JsonResponse(content="invalid request method", status=400)
+
 
 
 class CommentsViewSet(ModelViewSet):
