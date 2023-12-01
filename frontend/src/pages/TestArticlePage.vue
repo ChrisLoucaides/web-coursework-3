@@ -15,7 +15,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import ArticleView from "../components/ArticleView.vue";
-import Article from "../lib/models/Article.ts";
+import Article from "../utils/models/Article.ts";
 
 export default defineComponent({
     name: "TestArticlePage.vue",

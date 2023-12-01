@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue'
-import ArticleComment from "../lib/models/ArticleComment";
+import ArticleComment from "../utils/models/ArticleComment";
 
 export default defineComponent({
   name: "PostCommentView",

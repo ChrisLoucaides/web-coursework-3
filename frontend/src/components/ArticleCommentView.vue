@@ -141,10 +141,10 @@
 
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
-import ArticleComment from "../lib/models/ArticleComment";
+import ArticleComment from "../utils/models/ArticleComment";
 import {Tooltip} from "bootstrap";
 import PostCommentView from "../components/PostCommentView.vue";
-import User from "../lib/models/User.ts";
+import User from "../utils/models/User.ts";
 
 export default defineComponent({
   name: "ArticleCommentView",

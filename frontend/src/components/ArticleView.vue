@@ -12,7 +12,7 @@
   
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import Article from "../lib/models/Article";
+import Article from "../utils/models/Article";
 
 export default defineComponent({
     name: "ArticleView",

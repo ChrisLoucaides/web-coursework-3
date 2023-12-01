@@ -26,8 +26,8 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
 import ArticleCommentView from "../components/ArticleCommentView.vue";
-import ArticleComment from "../lib/models/ArticleComment.ts";
-import API from "../lib/utils/api.ts";
+import ArticleComment from "../utils/models/ArticleComment.ts";
+import API from "../utils/api.ts";
 
 export default defineComponent({
   name: "TestCommentPage.vue",
