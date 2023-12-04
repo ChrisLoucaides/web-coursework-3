@@ -1,17 +1,15 @@
 from django.contrib.auth import login, authenticate
-from django.contrib.auth.views import LoginView
-from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
-from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
 from django.contrib.auth.models import auth
-from rest_framework.viewsets import ModelViewSet
+from django.http import HttpResponse, HttpRequest
+from django.http import JsonResponse
+from django.shortcuts import render, redirect
+from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 
 from .forms import SignupForm, LoginForm
 from .models import ArticleComment, Article
 from .serialisers import CommentReadSerialiser, CommentWriteSerialiser
-from rest_framework import status
-from django.http import JsonResponse
 
 
 def user_login(request):  # TODO WEB-2: add docstring
