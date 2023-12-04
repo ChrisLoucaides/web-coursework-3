@@ -17,7 +17,7 @@ from django.urls import include, path
 from rest_framework import routers, permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-from .views import main_spa, CommentsViewSet, user_signup, getArticles
+from .views import main_spa, CommentsViewSet, user_signup, getArticles, user_login
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -42,5 +42,6 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),  # Include this line for the browsable API
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('signup/', user_signup, name="signup"),
+    path('login/', user_login, name='login'),
     path('articles/', getArticles, name="get articles"),
 ]
