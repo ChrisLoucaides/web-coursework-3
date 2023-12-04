@@ -14,7 +14,7 @@ from rest_framework import status
 from django.http import JsonResponse
 
 
-def user_login(request):
+def user_login(request):  # TODO WEB-2: add docstring
     form = LoginForm()
 
     if request.method == 'POST':
@@ -29,7 +29,7 @@ def user_login(request):
             if user is not None:
                 auth.login(request, user)
 
-                return redirect('https://news.sky.com/uk')  # TODO WEB-2: Redirect to homepage
+                return redirect('http://localhost:5173/')  # TODO WEB-2: Redirect to homepage
 
     return render(request, 'login.html', {'form': form})
 
@@ -44,6 +44,11 @@ def user_signup(request):  # TODO WEB-2: add docstring
     else:
         form = SignupForm()
     return render(request, 'signup.html', {'form': form})
+
+
+def user_logout(request):
+    auth.logout(request)
+    return redirect("")
 
 
 def main_spa(request: HttpRequest) -> HttpResponse:
