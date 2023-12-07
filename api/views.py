@@ -12,7 +12,10 @@ from .models import ArticleComment, Article
 from .serialisers import CommentReadSerialiser, CommentWriteSerialiser
 
 
-def user_login(request):  # TODO WEB-2: add docstring
+def user_login(request):
+    """
+    Logs the user in
+    """
     form = LoginForm()
 
     if request.method == 'POST':
@@ -32,7 +35,10 @@ def user_login(request):  # TODO WEB-2: add docstring
     return render(request, 'login.html', {'form': form})
 
 
-def user_signup(request):  # TODO WEB-2: add docstring
+def user_signup(request):
+    """
+    Allows a user to sign up to the site
+    """
     if request.method == 'POST':
         form = SignupForm(request.POST, request.FILES)
         if form.is_valid():
@@ -45,6 +51,9 @@ def user_signup(request):  # TODO WEB-2: add docstring
 
 
 def user_logout(request):
+    """
+    Logs the user out
+    """
     auth.logout(request)
     return redirect("")
 
@@ -53,7 +62,7 @@ def main_spa(request: HttpRequest) -> HttpResponse:
     return render(request, 'api/spa/index.html', {})
 
 
-def getArticles(request):
+def get_articles(request):
     if request.method == 'GET':
         articles = list(Article.objects.values())
         return JsonResponse(articles, safe=False, status=200)
