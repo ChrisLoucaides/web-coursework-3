@@ -1,8 +1,9 @@
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import auth
-from django.http import HttpResponse, HttpRequest
+from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -24,23 +25,24 @@ def user_login(request):
         print(form.errors)
         if form.is_valid():
             print("form is valid")
-            username = request.POST.get('username')
-            password = request.POST.get('password')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        print(password)
+        user = authenticate(request, username=username, password=password)
 
-            user = authenticate(request, username=username, password=password)
+        if user is not None:
+            print("user is not none")
+            auth.login(request, user)
 
-            if user is not None:
-                print("user is not none")
-                auth.login(request, user)
+            user_info = {
+                'id': user.id,
+                'username': user.username,
+            }
+            
+            
+            return HttpResponseRedirect((':5173/'))
 
-                user_info = {
-                    'id': user.id,
-                    'username': user.username,
-                }
-
-                return JsonResponse(user_info)
-
-    return JsonResponse({'name': 'uwu'})
+    return render(request, 'login.html', {'form': form})
 
 
 def user_signup(request):
