@@ -1,64 +1,89 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
 
-    form {
-      background-color: #fff;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      padding: 10%;
-      border-radius: 8px;
-      max-width: 40em;
-      margin: 0 auto;
-      box-sizing: border-box;
-    }
+        form {
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 10%;
+            border-radius: 8px;
+            max-width: 40em;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
 
-    h1 {
-      text-align: center;
-      color: #333;
-    }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
 
-    label {
-      display: block;
-      margin-bottom: 8%;
-      color: #555;
-    }
+        label {
+            display: block;
+            margin-bottom: 8%;
+            color: #555;
+        }
 
-    input,
-    button {
-      width: 100%;
-      padding: 6%;
-      margin-bottom: 10%;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      box-sizing: border-box;
-    }
+        input,
+        button {
+            width: 100%;
+            padding: 6%;
+            margin-bottom: 10%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
 
-    button {
-      background-color: #4caf50;
-      color: #fff;
-      cursor: pointer;
-    }
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            cursor: pointer;
+        }
 
-    button:hover {
-      background-color: #45a049;
-    }
-  </style>
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
 
-  <h1>Sky News 2: Login</h1>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-  </form>
+    <h1>Sky News 2: Login</h1>
+    <form id="login-form" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button id="login-button" type="submit">Login</button>
+    </form>
+
+    <script>
+        const formDataObject = {}
+        document.getElementById("login-button").addEventListener("click", function () {
+            const formData = new FormData(document.getElementById("login-form"));
+            formData.forEach((value, key) => {
+                formDataObject[key] = value;
+            });
+        });
+
+        fetch('/login/', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(formDataObject),
+        }).then(response => response.json())
+            .then(data => {
+                window.location.href = 'http://localhost:5173/';
+            })
+            .catch(error => {
+                console.error('Login failed', error);
+            });
+    </script>
 {% endblock %}

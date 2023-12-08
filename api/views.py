@@ -20,19 +20,27 @@ def user_login(request):
 
     if request.method == 'POST':
         form = LoginForm(request, data=request.POST)
-
+        print("method is post")
+        print(form.errors)
         if form.is_valid():
+            print("form is valid")
             username = request.POST.get('username')
             password = request.POST.get('password')
 
             user = authenticate(request, username=username, password=password)
 
             if user is not None:
+                print("user is not none")
                 auth.login(request, user)
 
-                return redirect('http://localhost:5173/')  # TODO WEB-2: Redirect to homepage
+                user_info = {
+                    'id': user.id,
+                    'username': user.username,
+                }
 
-    return render(request, 'login.html', {'form': form})
+                return JsonResponse(user_info)
+
+    return JsonResponse({'name': 'uwu'})
 
 
 def user_signup(request):
