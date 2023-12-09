@@ -21,25 +21,19 @@ def user_login(request):
 
     if request.method == 'POST':
         form = LoginForm(request, data=request.POST)
-        print("method is post")
-        print(form.errors)
+
         if form.is_valid():
-            print("form is valid")
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        print(password)
-        user = authenticate(request, username=username, password=password)
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+            user = authenticate(request, username=username, password=password)
 
-        if user is not None:
-            print("user exists")
-            auth.login(request, user)
+            if user is not None:
+                auth.login(request, user)
 
-            user_info = {
-                'id': user.id,
-                'username': user.username,
-            }
-            
-            return JsonResponse(user_info)
+                response = HttpResponseRedirect('http://localhost:5173/')
+                response.set_cookie('user_id', user.id)
+
+                return response
 
     return render(request, 'login.html', {'form': form})
 
