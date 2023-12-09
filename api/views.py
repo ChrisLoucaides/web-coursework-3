@@ -31,7 +31,7 @@ def user_login(request):
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
-            print("user is not none")
+            print("user exists")
             auth.login(request, user)
 
             user_info = {
@@ -39,8 +39,7 @@ def user_login(request):
                 'username': user.username,
             }
             
-            
-            return HttpResponseRedirect((':5173/'))
+            return JsonResponse(user_info)
 
     return render(request, 'login.html', {'form': form})
 
