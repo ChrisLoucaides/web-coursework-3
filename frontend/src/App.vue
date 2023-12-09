@@ -2,25 +2,25 @@
     <main class="container pt-4">
         <div>
             <router-link
-                class=""
-                :to="{name: 'Main Page'}"
+                    class=""
+                    :to="{name: 'Main Page'}"
             >
                 Main Page
             </router-link>
             |
             <router-link
-                class=""
-                :to="{name: 'Other Page'}"
+                    class=""
+                    :to="{name: 'Other Page'}"
             >
                 Other Page
             </router-link>
         </div>
-        <RouterView class="flex-shrink-0" />
+        <RouterView class="flex-shrink-0"/>
         <div v-for="article in response_data" :key="article">
-                <ArticleView
+            <ArticleView
                     :article="(article as Object as Article)">
-                </ArticleView>
-            </div>
+            </ArticleView>
+        </div>
     </main>
 </template>
 
@@ -29,11 +29,13 @@
 import ArticleView from './components/ArticleView.vue';
 import Article from './utils/models/Article.ts';
 
-import { defineComponent,  } from "vue";
-import { RouterView } from "vue-router";
+import {defineComponent,} from "vue";
+import {RouterView} from "vue-router";
+import {useAuthStore} from "../auth.ts"
+
 
 export default defineComponent({
-    components: { RouterView, ArticleView },
+    components: {RouterView, ArticleView},
     data() {
         return {
             response_data: ''
@@ -41,9 +43,11 @@ export default defineComponent({
     },
     name: "app",
     async mounted() {
-        const response = await fetch("http://localhost:8000/articles/")
-        this.response_data = await response.json()
-        console.log(this.response_data)
+        if (useAuthStore().isAuthenticated) {
+            const response = await fetch("http://localhost:8000/articles/")
+            this.response_data = await response.json()
+            console.log(this.response_data)
+        }
     },
 });
 
@@ -55,6 +59,6 @@ export default defineComponent({
 
 
 body {
-  font-family: 'Nunito', sans-serif !important;
+    font-family: 'Nunito', sans-serif !important;
 }
 </style>

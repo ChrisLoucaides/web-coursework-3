@@ -3,7 +3,6 @@ from django.contrib.auth.models import auth
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
-from django.urls import reverse
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -11,6 +10,11 @@ from rest_framework.viewsets import ModelViewSet
 from .forms import SignupForm, LoginForm
 from .models import ArticleComment, Article
 from .serialisers import CommentReadSerialiser, CommentWriteSerialiser
+
+
+def check_auth_status(request):
+    is_authenticated = request.user.is_authenticated
+    return JsonResponse({'is_authenticated': is_authenticated})
 
 
 def user_login(request):
