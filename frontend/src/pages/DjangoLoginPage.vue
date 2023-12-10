@@ -5,12 +5,14 @@
 </template>
 
 <script>
-export default {
+import {defineComponent} from "vue";
+
+export default defineComponent({
   name: 'DjangoLoginPage',
   beforeRouteEnter(to, from, next) {
     window.location.href = 'http://localhost:8000/login/';
   },
-};
+});
 </script>
 
 <style scoped>

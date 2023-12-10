@@ -6,9 +6,7 @@ import OtherPage from '../pages/OtherPage.vue';
 import TestCommentsPage from '../pages/TestCommentPage.vue';
 import TestArticlePage from '../pages/TestArticlePage.vue';
 import DjangoLoginPage from "../pages/DjangoLoginPage.vue";
-import {useAuthStore} from "../../auth.ts";
-
-import Cookies from 'js-cookie';
+import {authGuard} from "./authGuard.ts";
 
 let base = (import.meta.env.MODE == 'development') ? import.meta.env.BASE_URL : ''
 
@@ -16,7 +14,7 @@ let base = (import.meta.env.MODE == 'development') ? import.meta.env.BASE_URL : 
 const router = createRouter({
     history: createWebHistory(base),
     routes: [
-        {path: '/', name: 'Main Page', component: MainPage, beforeEnter: requireAuth},
+        {path: '/', name: 'Main Page', component: MainPage},
         {path: '/other/', name: 'Other Page', component: OtherPage},
         {path: '/testing/comments', name: 'Testing Comments page', component: TestCommentsPage},
         {path: '/testing/articles', name: 'Testing articles page', component: TestArticlePage},
@@ -24,23 +22,10 @@ const router = createRouter({
     ]
 })
 
-async function requireAuth(to, from, next) {
-    try {
-        const user_id = Cookies.get('user_id');
 
-        const authStore = useAuthStore();
+router.beforeEach((to, from, next) => {
+    authGuard(to, from, next)
+});
 
-        if (user_id) {
-            authStore.login({ id: parseInt(user_id) });
-
-            next({ name: 'Main Page' });
-        } else {
-            next({ name: 'Django Login' });
-        }
-    } catch (error) {
-        console.error('Error checking authentication status:', error);
-        next({ name: 'Django Login' });
-    }
-}
 
 export default router
