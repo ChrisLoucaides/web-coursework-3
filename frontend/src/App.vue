@@ -28,14 +28,19 @@
 
 import ArticleView from './components/ArticleView.vue';
 import Article from './utils/models/Article.ts';
+import {useAuthStore} from "../auth.ts"
 
 import {defineComponent,} from "vue";
 import {RouterView} from "vue-router";
-import {useAuthStore} from "../auth.ts"
 
 
 export default defineComponent({
     components: {RouterView, ArticleView},
+    setup() {
+        const authStore = useAuthStore()
+
+        return { authStore }
+    },
     data() {
         return {
             response_data: ''
@@ -43,7 +48,7 @@ export default defineComponent({
     },
     name: "app",
     async mounted() {
-        if (useAuthStore().isAuthenticated) {
+        if (this.authStore.isAuthenticated) {
             const response = await fetch("http://localhost:8000/articles/")
             this.response_data = await response.json()
             console.log(this.response_data)

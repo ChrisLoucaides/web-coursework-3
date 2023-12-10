@@ -7,8 +7,7 @@ interface User {
   // TODO: WEB-9 do we need any more fields in User here?
 }
 
-export const useAuthStore = defineStore({
-  id: 'auth',
+export const useAuthStore = defineStore("auth", {
   state: () => ({
     isAuthenticated: false,
     user: null as User | null,

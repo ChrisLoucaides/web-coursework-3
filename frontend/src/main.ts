@@ -10,9 +10,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap';
 
 const pinia = createPinia();
-pinia.use(useAuthStore);
 
-const app = createApp(App).use(pinia)
+const app = createApp(App)
+
+app.use(pinia)
 
 app.use(router)
 
