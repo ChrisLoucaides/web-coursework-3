@@ -18,13 +18,19 @@ const router = createRouter({
         {path: '/other/', name: 'Other Page', component: OtherPage},
         {path: '/testing/comments', name: 'Testing Comments page', component: TestCommentsPage},
         {path: '/testing/articles', name: 'Testing articles page', component: TestArticlePage},
-        {path: '/django-login', name: 'Django Login', component: DjangoLoginPage},
+        {path: '/django-login', name: 'Django Login', component: DjangoLoginPage, meta: { redirect: 'http://localhost:8000/login/'}},
     ]
 })
 
 
 router.beforeEach((to, from, next) => {
-    authGuard(to, from, next)
+    if (to.meta.redirect) {
+        window.location.replace(to.meta.redirect as string);
+        return;
+    }
+    else {
+        authGuard(to, from, next);
+    }
 });
 
 

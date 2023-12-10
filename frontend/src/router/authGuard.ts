@@ -11,6 +11,8 @@ export const authGuard: NavigationGuard = async (_to, _from, next) => {
     if (user_id) {
        // We want to grab the user from the API ideally here
        authStore.login({id: parseInt(user_id), username: 'TODO: Get whole user?'});
+    } else {
+        authStore.logout();
     }
 
     if (authStore.isAuthenticated) {
