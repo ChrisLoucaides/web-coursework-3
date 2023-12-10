@@ -52,6 +52,8 @@ export default defineComponent({
             const response = await fetch("http://localhost:8000/articles/")
             this.response_data = await response.json()
             console.log(this.response_data)
+        } else {
+            console.log("No Articles")
         }
     },
 });
