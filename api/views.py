@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from .forms import SignupForm, LoginForm
-from .models import ArticleComment, Article
+from .models import ArticleComment, Article, SiteUser, Category
 from .serialisers import CommentReadSerialiser, CommentWriteSerialiser
 
 
@@ -28,13 +28,20 @@ def user_login(request):
         if form.is_valid():
             username = request.POST.get('username')
             password = request.POST.get('password')
-            user = authenticate(request, username=username, password=password)
+            authenticated_user = authenticate(request, username=username, password=password)
 
-            if user is not None:
-                auth.login(request, user)
-
+            if authenticated_user is not None:
+                auth.login(request, authenticated_user)
+                json = {
+                    'user_id': authenticated_user.id,
+                    'username': username,
+                    'date_of_birth':authenticated_user.date_of_birth,
+                    'preferences':Category.objects.filter(user=authenticated_user.id).values
+                    }
+                print(json)
                 response = HttpResponseRedirect('http://localhost:5173/')
-                response.set_cookie('user_id', user.id)
+                response.set_cookie('user_id', authenticated_user.id)
+                response.content = json
 
                 return response
 

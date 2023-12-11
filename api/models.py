@@ -4,11 +4,16 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+class Category(models.Model):
+    name = models.TextField(max_length=255)
+
+    def __str__(self):
+        return self.name
 
 class SiteUser(AbstractUser):
     profile_picture = models.ImageField()
     date_of_birth = models.DateField()
-
+    category = models.ManyToManyField(Category, related_name='user')
     REQUIRED_FIELDS = ['email', 'profile_picture', 'date_of_birth']
 
 
