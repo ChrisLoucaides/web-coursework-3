@@ -21,10 +21,9 @@ class Article(models.Model):
     """
     A model representing a single article
     """
-    article_id = models.IntegerField()
     title_text = models.TextField()
     content_text = models.TextField()
-    category_text = models.TextField()
+    category = models.ForeignKey(to=Category, related_name='articles', null=True, blank=False, on_delete=models.CASCADE)
 
 
 class ArticleComment(models.Model):

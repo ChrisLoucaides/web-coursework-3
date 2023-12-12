@@ -10,7 +10,7 @@ from rest_framework import mixins
 from rest_framework.decorators import action
 from .forms import SignupForm, LoginForm
 from .models import ArticleComment, Article, SiteUser, Category
-from .serialisers import CommentReadSerialiser, CommentWriteSerialiser, UserSerialiser
+from .serialisers import CommentReadSerialiser, CommentWriteSerialiser, UserSerialiser, ArticleSerialiser
 
 
 def check_auth_status(request):
@@ -96,10 +96,36 @@ class UserViewSet(mixins.CreateModelMixin, GenericViewSet):
     @action(detail=False)
     def current(self, request, *args, **kwarg):
         cookie = request.COOKIES.get('user_id')
-        print(cookie)
         serialiser = self.get_serializer(SiteUser.objects.get(id=cookie), many=False)
 
         return Response(serialiser.data)
+    
+    @action(detail=False, methods=['PUT'])
+    def update_categories(self, request, *args, **kwarg):
+        cookie = request.COOKIES.get('user_id')
+        serialiser = self.get_serializer(SiteUser.objects.get(id=cookie), many=False)
+
+        return Response(serialiser.data)
+    
+
+class ArticleViewSet(ModelViewSet):
+    queryset = Article.objects.all()
+
+    def get_serializer_class(self):
+        return ArticleSerialiser
+    
+
+    def list(self, request, *args, **kwargs):
+        """
+        Returns all comments for a given requested article id
+        """
+        cookie = request.COOKIES.get('user_id')
+        user = SiteUser.objects.get(id = cookie)
+        categories = user.category.values_list('name', flat=True)
+        
+        serialiser = self.get_serializer(Article.objects.filter(category__name__in = categories), many=True)
+        return Response(serialiser.data)
+
 
 
 class CommentsViewSet(ModelViewSet):

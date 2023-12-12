@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ArticleComment, SiteUser, Category
+from .models import ArticleComment, SiteUser, Category, Article
 
 
 class UserSerialiser(serializers.ModelSerializer):
@@ -18,6 +18,20 @@ class UserSerialiser(serializers.ModelSerializer):
         model = SiteUser
         fields = ['first_name', 'last_name', 'profile_picture', 'username', 'preferences']
 
+
+class ArticleSerialiser(serializers.ModelSerializer):
+    
+    category = serializers.SerializerMethodField()
+    
+    def get_category(self, obj):
+        category_name = obj.category.name
+        print(category_name)
+        return category_name
+
+
+    class Meta:
+        model = Article
+        fields = ['title_text', 'content_text', 'category']
 
 class CommentReadSerialiser(serializers.ModelSerializer):
     """

@@ -17,7 +17,7 @@ from django.urls import include, path
 from rest_framework import routers, permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-from .views import main_spa, CommentsViewSet, UserViewSet, user_signup, get_articles, user_login, user_logout, check_auth_status, get_user
+from .views import main_spa, CommentsViewSet, UserViewSet, ArticleViewSet, user_signup, get_articles, user_login, user_logout, check_auth_status, get_user
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -35,6 +35,7 @@ schema_view = get_schema_view(
 router = routers.DefaultRouter()
 router.register(r'article/(?P<article_id>\d+)/comments', CommentsViewSet, basename='Comments')
 router.register(r'users', UserViewSet, basename='Users')
+router.register(r'articles', ArticleViewSet, basename='Articles')
 # router.register(r'article=', Art, basename='Comments')
 
 urlpatterns = [
@@ -46,6 +47,5 @@ urlpatterns = [
     path('login/', user_login, name='login'),
     path('logout/', user_logout, name='logout'),
     path('check-auth-status/', check_auth_status, name='check_auth_status'),
-    path('articles/', get_articles, name="get articles"),
     path('current_user/', get_user, name="get user"),
 ]

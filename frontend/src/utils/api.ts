@@ -1,5 +1,6 @@
 import ArticleComment from "./models/ArticleComment.ts";
 import User from './models/User.ts'
+import Article from "./models/Article.ts";
 
 class API {
 
@@ -17,6 +18,11 @@ class API {
     static fetchUser = async (): Promise<User> => {
         const result = await fetch(`${this.url}users/current`, {credentials:'include'});
         return await result.json() as User;
+    }
+
+    static fetchArticles = async (): Promise<Article[]> => {
+        const result = await fetch(`${this.url}articles`, {credentials:'include'});
+        return await result.json() as Article[];
     }
 
     /**

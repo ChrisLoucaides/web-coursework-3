@@ -18,7 +18,7 @@ const router = createRouter({
         {path: '/other/', name: 'Other Page', component: OtherPage},
         {path: '/testing/comments', name: 'Testing Comments page', component: TestCommentsPage},
         {path: '/testing/articles', name: 'Testing articles page', component: TestArticlePage},
-        {path: '/django-login', name: 'Django Login', component: DjangoLoginPage, meta: { redirect: 'http://localhost:8000/login/'}},
+        {path: '/django-login', name: 'Django Login', component: DjangoLoginPage, meta: { redirect: 'http://127.0.0.1:8000/login/'}},
     ]
 })
 

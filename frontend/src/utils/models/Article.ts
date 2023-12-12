@@ -3,5 +3,5 @@ export default interface Article {
     article_id: number;
     title_text: string;
     content_text: string;
-    category_text: string;
+    category: string;
 };

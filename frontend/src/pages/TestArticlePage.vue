@@ -31,7 +31,7 @@ export default defineComponent({
             article_id: 50,
             title_text: 'MY TITLE',
             content_text: 'MY ARTICLE CONTENT',
-            category_text: 'MY ARTICLE CATEGORY',
+            category: 'MY ARTICLE CATEGORY',
         };
     }
 })
