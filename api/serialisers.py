@@ -1,21 +1,29 @@
 from rest_framework import serializers
-from .models import ArticleComment, SiteUser
+from .models import ArticleComment, SiteUser, Category
 
 
-class CommentUserSerialiser(serializers.ModelSerializer):
+class UserSerialiser(serializers.ModelSerializer):
     """
-    A Serialiser for users that are NOT the current user, so does not serialise private data
+    A Serialiser for users
     """
+
+    preferences = serializers.SerializerMethodField()
+
+    def get_preferences(self, obj):
+        prefs = list(Category.objects.filter(user=obj.id).values_list('name', flat=True))
+        print(prefs)
+        return prefs
+
     class Meta:
         model = SiteUser
-        fields = ['first_name', 'last_name', 'profile_picture', 'username']
+        fields = ['first_name', 'last_name', 'profile_picture', 'username', 'preferences']
 
 
 class CommentReadSerialiser(serializers.ModelSerializer):
     """
     Serialises an ArticleComment object into json, fetching the user and all comment fields
     """
-    user = CommentUserSerialiser(read_only=True)
+    user = UserSerialiser(read_only=True)
     replies = serializers.SerializerMethodField()
 
     def get_replies(self, obj):

@@ -15,7 +15,7 @@ class API {
     }
 
     static fetchUser = async (): Promise<User> => {
-        const result = await fetch(`http://127.0.0.1:8000/current_user`, {credentials:'same-origin'});
+        const result = await fetch(`${this.url}users/current`, {credentials:'include'});
         return await result.json() as User;
     }
 

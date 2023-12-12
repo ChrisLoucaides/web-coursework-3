@@ -5,11 +5,12 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
-
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
+from rest_framework import mixins
+from rest_framework.decorators import action
 from .forms import SignupForm, LoginForm
 from .models import ArticleComment, Article, SiteUser, Category
-from .serialisers import CommentReadSerialiser, CommentWriteSerialiser
+from .serialisers import CommentReadSerialiser, CommentWriteSerialiser, UserSerialiser
 
 
 def check_auth_status(request):
@@ -32,15 +33,8 @@ def user_login(request):
 
             if authenticated_user is not None:
                 auth.login(request, authenticated_user)
-                user_as_json = {
-                    'id': authenticated_user.id,
-                    'username': username,
-                    'date_of_birth':authenticated_user.date_of_birth,
-                    'preferences':list(Category.objects.filter(user=authenticated_user.id).values_list('name', flat=True))
-                    }
-                print(user_as_json)
-                response = HttpResponseRedirect('http://localhost:5173/')
-                response.set_cookie('user_id', authenticated_user.id)
+                response = HttpResponseRedirect('http://127.0.0.1:5173/')
+                response.set_cookie('user_id', str(authenticated_user.id))
 
                 return response
 
@@ -87,6 +81,25 @@ def get_articles(request):
         return JsonResponse(articles, safe=False, status=200)
     else:
         return JsonResponse(content="invalid request method", status=400, data="")
+
+
+class UserViewSet(mixins.CreateModelMixin, GenericViewSet):
+    """
+    A ViewSet for operations related to users
+    """
+
+    queryset = SiteUser.objects.all()
+
+    def get_serializer_class(self):
+        return UserSerialiser
+
+    @action(detail=False)
+    def current(self, request, *args, **kwarg):
+        cookie = request.COOKIES.get('user_id')
+        print(cookie)
+        serialiser = self.get_serializer(SiteUser.objects.get(id=cookie), many=False)
+
+        return Response(serialiser.data)
 
 
 class CommentsViewSet(ModelViewSet):
