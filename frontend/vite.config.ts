@@ -12,6 +12,10 @@ export default defineConfig(({ mode }) => ({
         emptyOutDir: true,
         outDir: "../api/static/api/spa",
     },
+    server: {
+        host: '127.0.0.1',
+        port: 5173
+    },
     plugins: [vue()],
     resolve: {
         alias: {
