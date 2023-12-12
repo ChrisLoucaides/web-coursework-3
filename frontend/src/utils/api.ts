@@ -1,4 +1,5 @@
 import ArticleComment from "./models/ArticleComment.ts";
+import User from './models/User.ts'
 
 class API {
 
@@ -7,10 +8,15 @@ class API {
     /**
      * Fetches a list of comments and replies for a specified article id
      * @param articleId The id of the article
-     */
+    */
     static fetchCommentsForArticle = async (articleId: number): Promise<ArticleComment[]> => {
         const result = await fetch(`${this.url}article/${articleId}/comments`);
         return await result.json() as ArticleComment[];
+    }
+
+    static fetchUser = async (): Promise<User> => {
+        const result = await fetch(`http://127.0.0.1:8000/current_user`, {credentials:'same-origin'});
+        return await result.json() as User;
     }
 
     /**

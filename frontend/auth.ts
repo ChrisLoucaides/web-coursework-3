@@ -1,11 +1,7 @@
 import { defineStore } from 'pinia';
 import Cookies from 'js-cookie';
+import User from './src/utils/models/User.ts'
 
-interface User {
-  id: number;
-  username: string;
-  // TODO: WEB-9 do we need any more fields in User here?
-}
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({

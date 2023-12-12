@@ -32,21 +32,27 @@ def user_login(request):
 
             if authenticated_user is not None:
                 auth.login(request, authenticated_user)
-                json = {
-                    'user_id': authenticated_user.id,
+                user_as_json = {
+                    'id': authenticated_user.id,
                     'username': username,
                     'date_of_birth':authenticated_user.date_of_birth,
-                    'preferences':Category.objects.filter(user=authenticated_user.id).values
+                    'preferences':list(Category.objects.filter(user=authenticated_user.id).values_list('name', flat=True))
                     }
-                print(json)
+                print(user_as_json)
                 response = HttpResponseRedirect('http://localhost:5173/')
                 response.set_cookie('user_id', authenticated_user.id)
-                response.content = json
 
                 return response
 
     return render(request, 'login.html', {'form': form})
 
+
+def get_user(request):
+    id_from_cookie = request.COOKIES.get('user_id')
+    print(id_from_cookie)
+    user = SiteUser.objects.get(id = id_from_cookie)
+    print(user)
+    return user
 
 def user_signup(request):
     """

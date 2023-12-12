@@ -69,14 +69,15 @@ export default defineComponent({
   data() {
     return {
       response_data: '',
-      birthday: '',
+      date_of_birth: '',
       email: '',
       profile_picture: Image,
-      preferences: [],
+      preferences: Array<String>,
     }
   },
   async mounted() {
     if (this.authStore.isAuthenticated) {
+      console.log(this.authStore.user)
       const response = await fetch("http://localhost:8000/articles/")
       this.response_data = await response.json()
       console.log(this.response_data)
@@ -97,7 +98,7 @@ export default defineComponent({
 
         body: JSON.stringify({
           "id": authStore.$id,
-          "birthday": this.birthday,
+          "birthday": this.date_of_birth,
           "email": this.email,
           // "image": this.profile_picture,
           "preferences": this.preferences
