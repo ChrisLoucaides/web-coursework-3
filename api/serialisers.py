@@ -37,6 +37,7 @@ class ArticleSerialiser(serializers.ModelSerializer):
         model = Article
         fields = ['id', 'title_text', 'content_text', 'category', 'comment_count']
 
+
 class CommentReadSerialiser(serializers.ModelSerializer):
     """
     Serialises an ArticleComment object into json, fetching the user and all comment fields
@@ -60,4 +61,4 @@ class CommentWriteSerialiser(serializers.ModelSerializer):
 
     class Meta:
         model = ArticleComment
-        fields = '__all__'
+        fields = ['comment_text', 'created_date', 'updated_date', 'parent_comment']

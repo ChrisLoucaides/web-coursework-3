@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import auth
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
@@ -132,8 +134,7 @@ class ArticleViewSet(ModelViewSet):
         return Response(serialiser.data)
 
 
-
-class CommentsViewSet(ModelViewSet):
+class CommentsViewSet(mixins.CreateModelMixin, GenericViewSet):
     """
     A ViewSet for operations related to article comments
     """
@@ -164,8 +165,39 @@ class CommentsViewSet(ModelViewSet):
         """
         Posts a new comment on a requested article id
         """
+        article: Article = Article.objects.get(id=self.kwargs['article_id'])
+        if article is None:
+            return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
+
+        user = SiteUser.objects.get(id=request.COOKIES.get('user_id'))
+        serialiser = self.get_serializer(data=request.data)
+
+        serialiser.is_valid(raise_exception=True)
+        comment = serialiser.validated_data
+        comment['article_id'] = article
+        comment['user'] = user
+        article_comment = ArticleComment(**comment)
+        article_comment.save()
+
+        return_serialiser = CommentReadSerialiser(article_comment, many=False)
+        return Response(return_serialiser.data, status=status.HTTP_201_CREATED)
+
+    @action(methods=['PATCH'], detail=True)
+    def edit(self, request, *args, **kwargs):
+        """
+        Edits a comment's text and updates the updated_date to now
+        """
+        comment_id = kwargs.get('pk')
+        existing_comment: ArticleComment = ArticleComment.objects.get(id=comment_id)
+        if existing_comment is None:
+            return HttpResponse(status=status.HTTP_404_NOT_FOUND)
+
         serialiser = self.get_serializer(data=request.data)
         serialiser.is_valid(raise_exception=True)
-        serialiser.save()
 
-        return Response(serialiser.data, status=status.HTTP_201_CREATED)
+        existing_comment.comment_text = serialiser.validated_data['comment_text']
+        existing_comment.updated_date = datetime.date.today()
+        existing_comment.save()
+
+        return_serialiser = CommentReadSerialiser(existing_comment, many=False)
+        return Response(return_serialiser.data, status=status.HTTP_201_CREATED)

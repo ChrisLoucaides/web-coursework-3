@@ -31,7 +31,7 @@ class ArticleComment(models.Model):
     A model representing a comment a user can make under an article
     """
 
-    article_id = models.ForeignKey(Article, related_name='comment', null=False, blank=False, on_delete=models.CASCADE)  # TODO: Replace with relationship to Article model <- is this done correctly??
+    article_id = models.ForeignKey(Article, related_name='comment', null=False, blank=False, on_delete=models.CASCADE)
     user = models.ForeignKey(to=SiteUser, related_name='comments', on_delete=models.CASCADE)
     comment_text = models.TextField()
     created_date = models.DateField()
