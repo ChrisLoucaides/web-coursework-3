@@ -14,7 +14,7 @@ export default defineComponent({
   setup() {
     const authStore = useAuthStore()
 
-    return { authStore }
+    return {authStore}
   },
   data() {
     return {
@@ -51,31 +51,51 @@ export default defineComponent({
         return;
       }
 
-      const dto: ArticleComment = {
-        comment_text: comment.text,
-        created_date: (new Date()).toISOString().split('T')[0],
-        id: 0,
-        user: userId,
-        parent_comment: comment.reply_to,
-        replies: []
-      };
-      const newComment = await API.postComment(articleId, dto);
+
+      const isEditing: boolean = !!comment.id;
+      let newComment: ArticleComment;
+      if (isEditing) {
+        newComment = await API.editComment(articleId, comment.id ?? 0, comment.text);
+      } else {
+        const dto: ArticleComment = {
+          comment_text: comment.text,
+          created_date: (new Date()).toISOString(),
+          id: comment.id ?? 0,
+          user: userId,
+          parent_comment: comment.reply_to,
+          replies: []
+        };
+        newComment = await API.postComment(articleId, dto);
+      }
 
       if (!newComment.parent_comment) {
+        if (isEditing) {
+          const index = this.comments.findIndex(c => c.id === newComment.id);
+          this.comments[index].comment_text = newComment.comment_text;
+          this.comments[index].updated_date = newComment.updated_date;
+          return;
+        }
         this.comments.unshift(newComment);
       } else {
-        this.findAndInsert(newComment, this.comments);
+        this.findAndInsert(newComment, this.comments, isEditing);
       }
     },
 
-    findAndInsert(comment: ArticleComment, comments: ArticleComment[]): boolean {
+    findAndInsert(comment: ArticleComment, comments: ArticleComment[], isEditing: boolean): boolean {
       for (const c of comments) {
         if (c.id === comment.parent_comment) {
-          c.replies.unshift(comment);
+
+          if (isEditing) {
+            const index = c.replies.findIndex(c => c.id === comment.id);
+            c.replies[index].comment_text = comment.comment_text;
+            c.replies[index].updated_date = comment.updated_date;
+          } else {
+            c.replies.unshift(comment);
+          }
           return true;
         }
 
-        if (this.findAndInsert(comment, c.replies)) {
+        if (this.findAndInsert(comment, c.replies, isEditing)) {
           return true;
         }
       }
@@ -105,7 +125,8 @@ export default defineComponent({
       <hr>
       <h5>Comments:</h5>
       <PostCommentView @comment-posted="postComment"/>
-      <ArticleCommentView v-for="comment in comments" :key="comment.id" :comment="comment" @comment-posted="postComment"/>
+      <ArticleCommentView v-for="comment in comments" :key="comment.id" :comment="comment" @comment-posted="postComment"
+                          @comment-edited="postComment"/>
     </div>
   </div>
 </template>

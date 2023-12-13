@@ -11,7 +11,6 @@ class UserSerialiser(serializers.ModelSerializer):
 
     def get_preferences(self, obj):
         prefs = list(Category.objects.filter(user=obj.id).values_list('name', flat=True))
-        print(prefs)
         return prefs
 
     class Meta:
@@ -26,7 +25,6 @@ class ArticleSerialiser(serializers.ModelSerializer):
 
     def get_category(self, obj):
         category_name = obj.category.name
-        print(category_name)
         return category_name
 
     def get_comment_count(self, obj):

@@ -75,6 +75,16 @@
   }
 }
 
+.editForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  button {
+    width: fit-content;
+  }
+}
+
 .replies {
   margin-top: 1rem;
 }
@@ -100,7 +110,7 @@
         <span class="placeholder col-1"></span>
       </div>
 
-    <span class="placeholder col-4"></span>
+      <span class="placeholder col-4"></span>
 
     </div>
   </div>
@@ -122,17 +132,26 @@
            :data-bs-title="`Edited at ${comment.updated_date}`"></i>
 
       </div>
-      <span>{{ comment.comment_text }}</span>
+
+      <div v-if="inEditMode" class="editForm">
+        <textarea class="form-control form-multiline" :placeholder="comment.comment_text"
+                  v-model="editedText"></textarea>
+        <button @click="editComment" class="btn btn-primary">Save</button>
+      </div>
+      <span v-else>{{ comment.comment_text }}</span>
+
+
       <div class="comment-actions">
-        <button @click="toggleReplyForm">{{ replyFormOpen ? 'Cancel' : 'Reply' }}</button>
-        <button>Edit</button>
-        <button>Delete</button>
+        <button v-if="!inEditMode" @click="toggleReplyForm">{{ replyFormOpen ? 'Cancel' : 'Reply' }}</button>
+        <button v-if="isOwned" @click="toggleEditMode">{{ inEditMode ? 'Cancel' : 'Edit' }}</button>
+        <button v-if="isOwned &&!inEditMode">Delete</button>
       </div>
 
       <PostCommentView v-if="replyFormOpen" @comment-posted="postComment" :reply-to="comment.id"/>
 
       <div class="replies">
-        <ArticleCommentView v-for="reply in comment.replies ?? []" :key="reply.id" :comment="reply" @comment-posted="postComment"/>
+        <ArticleCommentView v-for="reply in comment.replies ?? []" :key="reply.id" :comment="reply"
+                            @comment-posted="postComment" @comment-edited="onCommentEdited"/>
       </div>
     </div>
 
@@ -145,11 +164,17 @@ import ArticleComment, {UpdateComment} from "../utils/models/ArticleComment";
 import {Tooltip} from "bootstrap";
 import PostCommentView from "../components/PostCommentView.vue";
 import User from "../utils/models/User.ts";
+import {useAuthStore} from "../../auth.ts";
 
 export default defineComponent({
   name: "ArticleCommentView",
   components: {PostCommentView},
-  emits: ['comment-posted'],
+  emits: ['comment-posted', 'comment-edited'],
+  setup() {
+    const authStore = useAuthStore()
+
+    return {authStore}
+  },
   props: {
     comment: {
       type: Object as PropType<ArticleComment>,
@@ -160,7 +185,9 @@ export default defineComponent({
   },
   data() {
     return {
-      replyFormOpen: false
+      replyFormOpen: false,
+      inEditMode: false,
+      editedText: ""
     }
   },
   computed: {
@@ -169,19 +196,40 @@ export default defineComponent({
     },
     user(): User {
       return this.comment?.user as User;
+    },
+    isOwned(): boolean {
+      return (this.comment?.user as User)?.id === this.authStore?.user?.id;
     }
   },
   mounted() {
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     [...tooltipTriggerList].map(tooltipTriggerEl => new Tooltip(tooltipTriggerEl));
+    this.editedText = this.comment?.comment_text ?? ""
   },
   methods: {
+    toggleEditMode() {
+      this.inEditMode = !this.inEditMode;
+      if (this.inEditMode) {
+        this.editedText = this.comment?.comment_text ?? ""
+      }
+    },
     toggleReplyForm() {
       this.replyFormOpen = !this.replyFormOpen;
     },
     postComment(comment: UpdateComment) {
       this.replyFormOpen = false;
       this.$emit('comment-posted', comment as UpdateComment);
+    },
+    editComment() {
+      this.inEditMode = false;
+      this.$emit('comment-edited', {
+        text: this.editedText,
+        reply_to: this.comment?.parent_comment,
+        id: this.comment?.id
+      } as UpdateComment)
+    },
+    onCommentEdited(comment: UpdateComment) {
+      this.$emit('comment-edited', comment as UpdateComment);
     }
   }
 })

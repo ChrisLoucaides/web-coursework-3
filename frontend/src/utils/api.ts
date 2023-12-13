@@ -101,7 +101,7 @@ class API {
         header.append('X-CSRFToken', csrftoken)
         header.append('content-type', 'application/json')
 
-        const result = await fetch(`${this.url}article/${articleId}/comments/${commentId}/`, {
+        const result = await fetch(`${this.url}article/${articleId}/comments/${commentId}/edit/`, {
             method: 'PATCH',
             headers: header,
             credentials: 'include',

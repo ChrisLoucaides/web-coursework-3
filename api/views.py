@@ -45,9 +45,7 @@ def user_login(request):
 
 def get_user(request):
     id_from_cookie = request.COOKIES.get('user_id')
-    print(id_from_cookie)
-    user = SiteUser.objects.get(id=id_from_cookie)
-    print(user)
+    user = SiteUser.objects.get(id = id_from_cookie)
     return user
 
 
@@ -181,7 +179,7 @@ class CommentsViewSet(mixins.CreateModelMixin, GenericViewSet):
         """
         Returns all comments for a given requested article id
         """
-        serialiser = self.get_serializer(self.get_queryset(), many=True)
+        serialiser = self.get_serializer(self.get_queryset().order_by('-created_date'), many=True)
         return Response(serialiser.data)
 
     def create(self, request, *args, **kwargs):
@@ -215,11 +213,10 @@ class CommentsViewSet(mixins.CreateModelMixin, GenericViewSet):
         if existing_comment is None:
             return HttpResponse(status=status.HTTP_404_NOT_FOUND)
 
-        serialiser = self.get_serializer(data=request.data)
-        serialiser.is_valid(raise_exception=True)
+        new_text = request.data['comment_text']
 
-        existing_comment.comment_text = serialiser.validated_data['comment_text']
-        existing_comment.updated_date = datetime.date.today()
+        existing_comment.comment_text = new_text
+        existing_comment.updated_date = datetime.datetime.now()
         existing_comment.save()
 
         return_serialiser = CommentReadSerialiser(existing_comment, many=False)

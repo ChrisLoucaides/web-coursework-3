@@ -36,10 +36,9 @@ class ArticleComment(models.Model):
     article_id = models.ForeignKey(Article, related_name='comment', null=False, blank=False, on_delete=models.CASCADE)
     user = models.ForeignKey(to=SiteUser, related_name='comments', on_delete=models.CASCADE)
     comment_text = models.TextField()
-    created_date = models.DateField()
-    updated_date = models.DateField(null=True, blank=True)
-    parent_comment = models.ForeignKey('ArticleComment', related_name='replies', null=True, blank=True,
-                                       on_delete=models.CASCADE)
+    created_date = models.DateTimeField()
+    updated_date = models.DateTimeField(null=True, blank=True)
+    parent_comment = models.ForeignKey('ArticleComment', related_name='replies', null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.id:} "{self.comment_text}" (on: {self.article_id}, by: {self.user.id})'
