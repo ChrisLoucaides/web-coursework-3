@@ -35,7 +35,7 @@ class ArticleSerialiser(serializers.ModelSerializer):
 
     class Meta:
         model = Article
-        fields = ['title_text', 'content_text', 'category', 'comment_count']
+        fields = ['id', 'title_text', 'content_text', 'category', 'comment_count']
 
 class CommentReadSerialiser(serializers.ModelSerializer):
     """

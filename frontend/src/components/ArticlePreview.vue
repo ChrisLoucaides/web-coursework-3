@@ -3,7 +3,7 @@ import {defineComponent, PropType} from 'vue'
 import ArticleCommentView from "./ArticleCommentView.vue";
 import PostCommentView from "./PostCommentView.vue";
 import Article from "../utils/models/Article.ts"
-import Pill from "@/components/Pill.vue";
+import Pill from "../components/Pill.vue";
 
 export default defineComponent({
   name: "ArticlePreview.vue",
@@ -25,13 +25,17 @@ export default defineComponent({
   methods: {
     truncate(input: string, limit: number = 30): string {
       return input.length > limit ? input.substring(0, limit) + '...' : input;
+    },
+    onClick() {
+      console.log(this.article)
+      this.$router.push(`article/${this.article.id}`)
     }
   }
 })
 </script>
 
 <template>
-  <div class="articlePreview">
+  <div class="articlePreview" @click="onClick">
     <div class="imageCol">
       <img src="../assets/BreakingNews.png"/>
     </div>
@@ -40,7 +44,7 @@ export default defineComponent({
       <span> {{ previewSubtext }}</span>
       <div class="pills">
         <Pill :text-content="article.category"/>
-        <Pill left-icon="bi bi-chat" :text-content="article.comment_count"/>
+        <Pill left-icon="bi bi-chat" :text-content="article.comment_count.toString()"/>
       </div>
     </div>
   </div>
