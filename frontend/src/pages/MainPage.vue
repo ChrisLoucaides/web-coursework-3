@@ -7,9 +7,9 @@
   </div>
 
 
-  <div v-for="article in response_data" :key="article.id">
-    <ArticleView :article="(article as Article)">
-    </ArticleView>
+  <div class="articlePreviews">
+    <ArticlePreview v-for="article in response_data" :key="article.id" :article="article" >
+    </ArticlePreview>
   </div>
 
   <!-- Modal -->
@@ -54,7 +54,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import ArticleView from "../components/ArticleView.vue";
+import ArticlePreview from "../components/ArticlePreview.vue";
 import { useAuthStore } from "../../auth.ts";
 import Article from "../utils/models/Article";
 import User from "../utils/models/User"
@@ -62,7 +62,7 @@ import API from '../utils/api'
 
 
 export default defineComponent({
-  components: { ArticleView },
+  components: { ArticlePreview },
 
   setup() {
     const authStore = useAuthStore()
@@ -123,4 +123,12 @@ export default defineComponent({
 </script>
 
 
-<style scoped></style>
+<style scoped lang="scss">
+
+.articlePreviews {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+</style>

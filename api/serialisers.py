@@ -20,18 +20,22 @@ class UserSerialiser(serializers.ModelSerializer):
 
 
 class ArticleSerialiser(serializers.ModelSerializer):
-    
+
     category = serializers.SerializerMethodField()
-    
+    comment_count = serializers.SerializerMethodField()
+
     def get_category(self, obj):
         category_name = obj.category.name
         print(category_name)
         return category_name
 
+    def get_comment_count(self, obj):
+        count = obj.comment.count()
+        return count
 
     class Meta:
         model = Article
-        fields = ['title_text', 'content_text', 'category']
+        fields = ['title_text', 'content_text', 'category', 'comment_count']
 
 class CommentReadSerialiser(serializers.ModelSerializer):
     """

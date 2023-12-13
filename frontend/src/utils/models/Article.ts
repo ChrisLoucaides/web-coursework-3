@@ -4,4 +4,5 @@ export default interface Article {
     title_text: string;
     content_text: string;
     category: string;
+    comment_count: number;
 };
