@@ -16,7 +16,7 @@ class UserSerialiser(serializers.ModelSerializer):
 
     class Meta:
         model = SiteUser
-        fields = ['first_name', 'last_name', 'profile_picture', 'username', 'preferences']
+        fields = ['id', 'first_name', 'last_name', 'profile_picture', 'username', 'preferences']
 
 
 class ArticleSerialiser(serializers.ModelSerializer):

@@ -67,9 +67,45 @@ class API {
      * @param comment The new comment model
      */
     static postComment = async (articleId: number, comment: ArticleComment): Promise<ArticleComment> => {
-        const result = await fetch(`${this.url}article/${articleId}/comments`, {
+        let csrftoken = Cookies.get('csrftoken')
+        if (csrftoken==null) {
+            csrftoken = 'BLAHBLAH'
+        }
+        const header = new Headers()
+        header.append('X-CSRFToken', csrftoken)
+        header.append('content-type', 'application/json')
+
+        const result = await fetch(`${this.url}article/${articleId}/comments/`, {
             method: 'POST',
+            headers: header,
+            credentials: 'include',
             body: JSON.stringify(comment)
+        });
+        return await result.json() as ArticleComment;
+    }
+
+    /**
+     * Updated the text of a comment
+     * @param articleId The id of the article
+     * @param commentId The id of the comment to update
+     * @param comment_text The new text to replace with
+     */
+    static editComment = async (articleId: number, commentId: number, comment_text: string): Promise<ArticleComment> => {
+        let csrftoken = Cookies.get('csrftoken')
+        if (csrftoken==null) {
+            csrftoken = 'BLAHBLAH'
+        }
+        const header = new Headers()
+        header.append('X-CSRFToken', csrftoken)
+        header.append('content-type', 'application/json')
+
+        const result = await fetch(`${this.url}article/${articleId}/comments/${commentId}/`, {
+            method: 'PATCH',
+            headers: header,
+            credentials: 'include',
+            body: JSON.stringify({
+                comment_text
+            })
         });
         return await result.json() as ArticleComment;
     }

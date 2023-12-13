@@ -4,12 +4,18 @@ import Article from "../utils/models/Article.ts";
 import API from "../utils/api.ts";
 import Pill from "../components/Pill.vue";
 import ArticleCommentView from "../components/ArticleCommentView.vue";
-import ArticleComment from "../utils/models/ArticleComment.ts";
-import PostCommentView from "@/components/PostCommentView.vue";
+import ArticleComment, {UpdateComment} from "../utils/models/ArticleComment.ts";
+import PostCommentView from "../components/PostCommentView.vue";
+import {useAuthStore} from "../../auth.ts";
 
 export default defineComponent({
   name: "ArticlePage",
   components: {PostCommentView, ArticleCommentView, Pill},
+  setup() {
+    const authStore = useAuthStore()
+
+    return { authStore }
+  },
   data() {
     return {
       isLoading: true,
@@ -34,6 +40,49 @@ export default defineComponent({
       this.isLoading = false;
       this.error = "Failed to retrieve article. It may have been deleted."
     }
+  },
+  methods: {
+    async postComment(comment: UpdateComment) {
+      const userId = this.authStore.user?.id;
+      const articleId = this.article?.id;
+
+      if (!userId || !articleId) {
+        console.log(this.authStore.user, articleId);
+        return;
+      }
+
+      const dto: ArticleComment = {
+        comment_text: comment.text,
+        created_date: (new Date()).toISOString().split('T')[0],
+        id: 0,
+        user: userId,
+        parent_comment: comment.reply_to,
+        replies: []
+      };
+      const newComment = await API.postComment(articleId, dto);
+
+      if (!newComment.parent_comment) {
+        this.comments.unshift(newComment);
+      } else {
+        this.findAndInsert(newComment, this.comments);
+      }
+    },
+
+    findAndInsert(comment: ArticleComment, comments: ArticleComment[]): boolean {
+      for (const c of comments) {
+        if (c.id === comment.parent_comment) {
+          c.replies.unshift(comment);
+          return true;
+        }
+
+        if (this.findAndInsert(comment, c.replies)) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
   }
 })
 </script>
@@ -55,8 +104,8 @@ export default defineComponent({
     <div class="comments">
       <hr>
       <h5>Comments:</h5>
-      <PostCommentView />
-      <ArticleCommentView v-for="comment in comments" :key="comment.id" :comment="comment"/>
+      <PostCommentView @comment-posted="postComment"/>
+      <ArticleCommentView v-for="comment in comments" :key="comment.id" :comment="comment" @comment-posted="postComment"/>
     </div>
   </div>
 </template>
