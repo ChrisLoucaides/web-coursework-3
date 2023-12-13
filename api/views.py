@@ -1,5 +1,3 @@
-import json
-
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import auth
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
@@ -13,7 +11,6 @@ from rest_framework.decorators import action
 from .forms import SignupForm, LoginForm
 from .models import ArticleComment, Article, SiteUser, Category
 from .serialisers import CommentReadSerialiser, CommentWriteSerialiser, UserSerialiser, ArticleSerialiser
-
 
 def check_auth_status(request):
     return JsonResponse({'is_authenticated': True})
@@ -46,10 +43,9 @@ def user_login(request):
 def get_user(request):
     id_from_cookie = request.COOKIES.get('user_id')
     print(id_from_cookie)
-    user = SiteUser.objects.get(id=id_from_cookie)
+    user = SiteUser.objects.get(id = id_from_cookie)
     print(user)
     return user
-
 
 def user_signup(request):
     """
@@ -72,14 +68,6 @@ def user_logout(request):
     """
     auth.logout(request)
     return redirect("")
-
-
-def update_user(request):
-    data = json.loads(request.body.decode('utf-8'))
-
-    #TODO WEB-9: Extract data from the request and update the user profile
-
-    return JsonResponse({'message': 'Profile updated successfully'})
 
 
 def main_spa(request: HttpRequest) -> HttpResponse:
@@ -110,31 +98,40 @@ class UserViewSet(mixins.CreateModelMixin, GenericViewSet):
         serialiser = self.get_serializer(SiteUser.objects.get(id=cookie), many=False)
 
         return Response(serialiser.data)
-
-    @action(detail=False, methods=['PUT'])
+    
+    @action(detail=False, methods=['PATCH'])
     def update_categories(self, request, *args, **kwarg):
         cookie = request.COOKIES.get('user_id')
-        serialiser = self.get_serializer(SiteUser.objects.get(id=cookie), many=False)
-
-        return Response(serialiser.data)
-
+        user = SiteUser.objects.get(id=cookie)
+        print("request.data is BELOW")
+        print(request.data)
+        new_preferences = request.data
+        print(type(new_preferences))
+        user.category.set(Category.objects.filter(name__in=new_preferences['preferences']))
+        user.save()
+        print(user.category)
+        
+        return Response('User preferences updated')
+    
 
 class ArticleViewSet(ModelViewSet):
     queryset = Article.objects.all()
 
     def get_serializer_class(self):
         return ArticleSerialiser
+    
 
     def list(self, request, *args, **kwargs):
         """
         Returns all comments for a given requested article id
         """
         cookie = request.COOKIES.get('user_id')
-        user = SiteUser.objects.get(id=cookie)
+        user = SiteUser.objects.get(id = cookie)
         categories = user.category.values_list('name', flat=True)
-
-        serialiser = self.get_serializer(Article.objects.filter(category__name__in=categories), many=True)
+        
+        serialiser = self.get_serializer(Article.objects.filter(category__name__in = categories), many=True)
         return Response(serialiser.data)
+
 
 
 class CommentsViewSet(ModelViewSet):
