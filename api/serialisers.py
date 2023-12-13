@@ -16,22 +16,27 @@ class UserSerialiser(serializers.ModelSerializer):
 
     class Meta:
         model = SiteUser
-        fields = ['first_name', 'last_name', 'profile_picture', 'username', 'preferences']
+        fields = ['id', 'first_name', 'last_name', 'profile_picture', 'username', 'preferences']
 
 
 class ArticleSerialiser(serializers.ModelSerializer):
-    
+
     category = serializers.SerializerMethodField()
-    
+    comment_count = serializers.SerializerMethodField()
+
     def get_category(self, obj):
         category_name = obj.category.name
         print(category_name)
         return category_name
 
+    def get_comment_count(self, obj):
+        count = obj.comment.count()
+        return count
 
     class Meta:
         model = Article
-        fields = ['title_text', 'content_text', 'category']
+        fields = ['id', 'title_text', 'content_text', 'category', 'comment_count']
+
 
 class CommentReadSerialiser(serializers.ModelSerializer):
     """
@@ -56,4 +61,4 @@ class CommentWriteSerialiser(serializers.ModelSerializer):
 
     class Meta:
         model = ArticleComment
-        fields = '__all__'
+        fields = ['comment_text', 'created_date', 'updated_date', 'parent_comment']

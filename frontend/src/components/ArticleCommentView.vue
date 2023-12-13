@@ -129,10 +129,10 @@
         <button>Delete</button>
       </div>
 
-      <PostCommentView v-if="replyFormOpen" @postComment="postComment"/>
+      <PostCommentView v-if="replyFormOpen" @comment-posted="postComment" :reply-to="comment.id"/>
 
       <div class="replies">
-        <ArticleCommentView v-for="reply in comment.replies ?? []" :key="reply.id" :comment="reply"/>
+        <ArticleCommentView v-for="reply in comment.replies ?? []" :key="reply.id" :comment="reply" @comment-posted="postComment"/>
       </div>
     </div>
 
@@ -141,7 +141,7 @@
 
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
-import ArticleComment from "../utils/models/ArticleComment";
+import ArticleComment, {UpdateComment} from "../utils/models/ArticleComment";
 import {Tooltip} from "bootstrap";
 import PostCommentView from "../components/PostCommentView.vue";
 import User from "../utils/models/User.ts";
@@ -149,6 +149,7 @@ import User from "../utils/models/User.ts";
 export default defineComponent({
   name: "ArticleCommentView",
   components: {PostCommentView},
+  emits: ['comment-posted'],
   props: {
     comment: {
       type: Object as PropType<ArticleComment>,
@@ -178,8 +179,9 @@ export default defineComponent({
     toggleReplyForm() {
       this.replyFormOpen = !this.replyFormOpen;
     },
-    postComment(comment: ArticleComment) {
-      alert(comment.comment_text)
+    postComment(comment: UpdateComment) {
+      this.replyFormOpen = false;
+      this.$emit('comment-posted', comment as UpdateComment);
     }
   }
 })
