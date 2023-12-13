@@ -26,7 +26,7 @@ class API {
         return await result.json() as Article[];
     }
 
-    static updatePreferences = async (json): Promise<void> => {
+    static updatePreferences = async (json: any): Promise<number> => { //TODO WEB-9: change to updateUser and change url path
         var csrftoken = Cookies.get('csrftoken')
         if (csrftoken==null) {
             csrftoken = 'BLAHBLAH'
@@ -34,14 +34,16 @@ class API {
         const header = new Headers()
         header.append('X-CSRFToken', csrftoken)
         header.append('content-type', 'application/json')
-        const result = await fetch(`${this.url}users/update_categories/`, {
+        const response = await fetch(`${this.url}users/update_user/`, {
             method: 'PATCH',
             headers: header,
             body: json,
             credentials: 'include',
         });
-        console.log(result)
-        console.log(result.json())
+        console.log(response)
+        console.log(response.json())
+
+        return response.status
         // return await result.json() as Article[];
     }
 

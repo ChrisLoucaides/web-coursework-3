@@ -49,6 +49,4 @@ urlpatterns = [
     path('logout/', user_logout, name='logout'),
     path('check-auth-status/', check_auth_status, name='check_auth_status'),
     path('current_user/', get_user, name="get user"),
-    # path('update_user/', update_categories, name="update user"),
-    
 ]

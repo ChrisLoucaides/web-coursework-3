@@ -12,6 +12,7 @@ from .forms import SignupForm, LoginForm
 from .models import ArticleComment, Article, SiteUser, Category
 from .serialisers import CommentReadSerialiser, CommentWriteSerialiser, UserSerialiser, ArticleSerialiser
 
+
 def check_auth_status(request):
     return JsonResponse({'is_authenticated': True})
 
@@ -43,9 +44,10 @@ def user_login(request):
 def get_user(request):
     id_from_cookie = request.COOKIES.get('user_id')
     print(id_from_cookie)
-    user = SiteUser.objects.get(id = id_from_cookie)
+    user = SiteUser.objects.get(id=id_from_cookie)
     print(user)
     return user
+
 
 def user_signup(request):
     """
@@ -98,8 +100,8 @@ class UserViewSet(mixins.CreateModelMixin, GenericViewSet):
         serialiser = self.get_serializer(SiteUser.objects.get(id=cookie), many=False)
 
         return Response(serialiser.data)
-    
-    @action(detail=False, methods=['PATCH'])
+
+    @action(detail=False, methods=['PATCH'])  # TODO: WEB-9 get rid of this and use below method (update_user)
     def update_categories(self, request, *args, **kwarg):
         cookie = request.COOKIES.get('user_id')
         user = SiteUser.objects.get(id=cookie)
@@ -110,28 +112,48 @@ class UserViewSet(mixins.CreateModelMixin, GenericViewSet):
         user.category.set(Category.objects.filter(name__in=new_preferences['preferences']))
         user.save()
         print(user.category)
-        
+
         return Response('User preferences updated')
-    
+
+    @action(detail=False, methods=['PATCH'])
+    def update_user(self, request, *args, **kwargs):
+        cookie = request.COOKIES.get('user_id')
+        user = SiteUser.objects.get(id=cookie)
+
+        new_data = request.data
+
+        user.category.set(Category.objects.filter(name__in=new_data['preferences']))
+
+        fields_to_update = ['email', 'date_of_birth']
+
+        for field in fields_to_update:
+            if field in new_data and new_data[field] != '':
+                setattr(user, field, new_data[field])
+
+        if 'profile_picture' in request.FILES:
+            user.profile_picture = request.FILES['profile_picture']
+
+        user.save()
+
+        return Response('User details updated', status=status.HTTP_200_OK)
+
 
 class ArticleViewSet(ModelViewSet):
     queryset = Article.objects.all()
 
     def get_serializer_class(self):
         return ArticleSerialiser
-    
 
     def list(self, request, *args, **kwargs):
         """
         Returns all comments for a given requested article id
         """
         cookie = request.COOKIES.get('user_id')
-        user = SiteUser.objects.get(id = cookie)
+        user = SiteUser.objects.get(id=cookie)
         categories = user.category.values_list('name', flat=True)
-        
-        serialiser = self.get_serializer(Article.objects.filter(category__name__in = categories), many=True)
-        return Response(serialiser.data)
 
+        serialiser = self.get_serializer(Article.objects.filter(category__name__in=categories), many=True)
+        return Response(serialiser.data)
 
 
 class CommentsViewSet(ModelViewSet):
