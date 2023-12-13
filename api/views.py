@@ -77,7 +77,7 @@ def user_logout(request):
 def update_user(request):
     data = json.loads(request.body.decode('utf-8'))
 
-    # TODO WEB-9: Extract data from the request and update the user profile
+    #TODO WEB-9: Extract data from the request and update the user profile
 
     return JsonResponse({'message': 'Profile updated successfully'})
 
