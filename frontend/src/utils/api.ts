@@ -101,7 +101,7 @@ class API {
         header.append('X-CSRFToken', csrftoken)
         header.append('content-type', 'application/json')
 
-        const result = await fetch(`${this.url}article/${articleId}/comments/${commentId}/edit/`, {
+        const result = await fetch(`${this.url}article/${articleId}/comments/${commentId}/`, {
             method: 'PATCH',
             headers: header,
             credentials: 'include',
@@ -110,6 +110,18 @@ class API {
             })
         });
         return await result.json() as ArticleComment;
+    }
+
+    static deleteComment = async (articleId: number, commentId: number) => {
+        let csrftoken = Cookies.get('csrftoken')
+        if (csrftoken==null) {
+            csrftoken = 'BLAHBLAH'
+        }
+        const header = new Headers()
+        header.append('X-CSRFToken', csrftoken)
+        header.append('content-type', 'application/json')
+
+        await fetch(`${this.url}article/${articleId}/comments/${commentId}`, { headers: header, credentials: 'include', method: 'DELETE' });
     }
 }
 

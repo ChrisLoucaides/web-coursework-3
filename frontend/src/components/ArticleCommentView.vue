@@ -144,14 +144,14 @@
       <div class="comment-actions">
         <button v-if="!inEditMode" @click="toggleReplyForm">{{ replyFormOpen ? 'Cancel' : 'Reply' }}</button>
         <button v-if="isOwned" @click="toggleEditMode">{{ inEditMode ? 'Cancel' : 'Edit' }}</button>
-        <button v-if="isOwned &&!inEditMode">Delete</button>
+        <button v-if="isOwned && !inEditMode" @click="deleteComment">Delete</button>
       </div>
 
       <PostCommentView v-if="replyFormOpen" @comment-posted="postComment" :reply-to="comment.id"/>
 
       <div class="replies">
         <ArticleCommentView v-for="reply in comment.replies ?? []" :key="reply.id" :comment="reply"
-                            @comment-posted="postComment" @comment-edited="onCommentEdited"/>
+                            @comment-posted="postComment" @comment-edited="onCommentEdited" @comment-deleted="onCommentDeleted"/>
       </div>
     </div>
 
@@ -169,7 +169,7 @@ import {useAuthStore} from "../../auth.ts";
 export default defineComponent({
   name: "ArticleCommentView",
   components: {PostCommentView},
-  emits: ['comment-posted', 'comment-edited'],
+  emits: ['comment-posted', 'comment-edited', 'comment-deleted'],
   setup() {
     const authStore = useAuthStore()
 
@@ -230,6 +230,14 @@ export default defineComponent({
     },
     onCommentEdited(comment: UpdateComment) {
       this.$emit('comment-edited', comment as UpdateComment);
+    },
+    async deleteComment() {
+      if (confirm('Are you sure you want to delete this comment?')) {
+        this.$emit('comment-deleted', this.comment?.id ?? 0)
+      }
+    },
+    onCommentDeleted(id: number) {
+      this.$emit('comment-deleted', id);
     }
   }
 })

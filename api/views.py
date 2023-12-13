@@ -155,6 +155,7 @@ class ArticleViewSet(ModelViewSet):
         serialiser = self.get_serializer(Article.objects.filter(category__name__in=categories), many=True)
         return Response(serialiser.data)
 
+
 class CommentsViewSet(mixins.CreateModelMixin, GenericViewSet):
     """
     A ViewSet for operations related to article comments
@@ -203,8 +204,7 @@ class CommentsViewSet(mixins.CreateModelMixin, GenericViewSet):
         return_serialiser = CommentReadSerialiser(article_comment, many=False)
         return Response(return_serialiser.data, status=status.HTTP_201_CREATED)
 
-    @action(methods=['PATCH'], detail=True)
-    def edit(self, request, *args, **kwargs):
+    def partial_update(self, request, *args, **kwargs):
         """
         Edits a comment's text and updates the updated_date to now
         """
@@ -221,3 +221,20 @@ class CommentsViewSet(mixins.CreateModelMixin, GenericViewSet):
 
         return_serialiser = CommentReadSerialiser(existing_comment, many=False)
         return Response(return_serialiser.data, status=status.HTTP_201_CREATED)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        Deletes a comment on an article
+        """
+        user = SiteUser.objects.get(id=request.COOKIES.get('user_id'))
+        comment_id = kwargs.get('pk')
+        existing_comment: ArticleComment = ArticleComment.objects.get(id=comment_id)
+        if existing_comment is None:
+            return HttpResponse(status=status.HTTP_404_NOT_FOUND)
+
+        if existing_comment.user.id is not user.id:
+            return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
+
+        existing_comment.delete()
+
+        return Response(status=status.HTTP_200_OK)

@@ -42,6 +42,18 @@ export default defineComponent({
     }
   },
   methods: {
+    async deleteComment(id: number) {
+      await API.deleteComment(this.article?.id ?? 0, id);
+
+      const index = this.comments.findIndex(c => c.id === id);
+      if (index > -1) {
+        this.comments.splice(index, 1);
+        return;
+      }
+
+      console.log(index, id);
+      this.findAndUpdate({id, replies: [], comment_text: "", created_date: "", user: 0}, this.comments, false, true);
+    },
     async postComment(comment: UpdateComment) {
       const userId = this.authStore.user?.id;
       const articleId = this.article?.id;
@@ -77,25 +89,34 @@ export default defineComponent({
         }
         this.comments.unshift(newComment);
       } else {
-        this.findAndInsert(newComment, this.comments, isEditing);
+        this.findAndUpdate(newComment, this.comments, isEditing, false);
       }
     },
 
-    findAndInsert(comment: ArticleComment, comments: ArticleComment[], isEditing: boolean): boolean {
+    findAndUpdate(comment: ArticleComment | null, comments: ArticleComment[], isEditing: boolean, isDelete: boolean): boolean {
       for (const c of comments) {
-        if (c.id === comment.parent_comment) {
+
+        if (isDelete) {
+          const index = c.replies.findIndex(c => c.id === comment?.id);
+          if (index > -1) {
+            c.replies.splice(index, 1);
+            return true;
+          }
+        }
+
+        if (c.id === comment?.parent_comment) {
 
           if (isEditing) {
-            const index = c.replies.findIndex(c => c.id === comment.id);
-            c.replies[index].comment_text = comment.comment_text;
-            c.replies[index].updated_date = comment.updated_date;
+            const index = c.replies.findIndex(c => c.id === comment?.id);
+            c.replies[index].comment_text = comment?.comment_text;
+            c.replies[index].updated_date = comment?.updated_date;
           } else {
             c.replies.unshift(comment);
           }
           return true;
         }
 
-        if (this.findAndInsert(comment, c.replies, isEditing)) {
+        if (this.findAndUpdate(comment, c.replies, isEditing, isDelete)) {
           return true;
         }
       }
@@ -125,8 +146,9 @@ export default defineComponent({
       <hr>
       <h5>Comments:</h5>
       <PostCommentView @comment-posted="postComment"/>
-      <ArticleCommentView v-for="comment in comments" :key="comment.id" :comment="comment" @comment-posted="postComment"
-                          @comment-edited="postComment"/>
+      <ArticleCommentView v-for="comment in comments" :key="comment.id" :comment="comment"
+                          @comment-posted="postComment"
+                          @comment-edited="postComment" @comment-deleted="deleteComment"/>
     </div>
   </div>
 </template>
