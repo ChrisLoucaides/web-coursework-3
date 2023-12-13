@@ -119,7 +119,6 @@ class ArticleViewSet(ModelViewSet):
 
     def get_serializer_class(self):
         return ArticleSerialiser
-    
 
     def list(self, request, *args, **kwargs):
         """

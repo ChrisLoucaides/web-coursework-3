@@ -16,16 +16,32 @@ class API {
         return await result.json() as ArticleComment[];
     }
 
+    /**
+     * Fetches a DTO of the current logged in user
+     */
     static fetchUser = async (): Promise<User> => {
         const result = await fetch(`${this.url}users/current`, { credentials: 'include' });
         return await result.json() as User;
     }
 
+    /**
+     * Fetches all articles for the current logged in user
+     */
     static fetchArticles = async (): Promise<Article[]> => {
         const result = await fetch(`${this.url}articles`, { credentials: 'include' });
         return await result.json() as Article[];
     }
 
+     /**
+     * Fetches an article by id
+     * @param id The id of the article to retrieve
+     */
+    static fetchArticle = async (id: number): Promise<Article> => {
+        const result = await fetch(`${this.url}articles/${id}`, { credentials: 'include' });
+        return await result.json() as Article;
+    }
+
+    //TODO: Typescript-ify this (pls make interface and send here :))
     static updatePreferences = async (json): Promise<void> => {
         var csrftoken = Cookies.get('csrftoken')
         if (csrftoken==null) {
