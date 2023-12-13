@@ -1,6 +1,7 @@
 import ArticleComment from "./models/ArticleComment.ts";
 import User from './models/User.ts'
 import Article from "./models/Article.ts";
+import Cookies from "js-cookie";
 
 class API {
 
@@ -16,13 +17,32 @@ class API {
     }
 
     static fetchUser = async (): Promise<User> => {
-        const result = await fetch(`${this.url}users/current`, {credentials:'include'});
+        const result = await fetch(`${this.url}users/current`, { credentials: 'include' });
         return await result.json() as User;
     }
 
     static fetchArticles = async (): Promise<Article[]> => {
-        const result = await fetch(`${this.url}articles`, {credentials:'include'});
+        const result = await fetch(`${this.url}articles`, { credentials: 'include' });
         return await result.json() as Article[];
+    }
+
+    static updatePreferences = async (json): Promise<void> => {
+        var csrftoken = Cookies.get('csrftoken')
+        if (csrftoken==null) {
+            csrftoken = 'BLAHBLAH'
+        }
+        const header = new Headers()
+        header.append('X-CSRFToken', csrftoken)
+        header.append('content-type', 'application/json')
+        const result = await fetch(`${this.url}users/update_categories/`, {
+            method: 'PATCH',
+            headers: header,
+            body: json,
+            credentials: 'include',
+        });
+        console.log(result)
+        console.log(result.json())
+        // return await result.json() as Article[];
     }
 
     /**

@@ -36,6 +36,7 @@ router = routers.DefaultRouter()
 router.register(r'article/(?P<article_id>\d+)/comments', CommentsViewSet, basename='Comments')
 router.register(r'users', UserViewSet, basename='Users')
 router.register(r'articles', ArticleViewSet, basename='Articles')
+# router.register(r'update_user', UserViewSet, basename='update_user')
 # router.register(r'article=', Art, basename='Comments')
 
 urlpatterns = [
@@ -48,4 +49,6 @@ urlpatterns = [
     path('logout/', user_logout, name='logout'),
     path('check-auth-status/', check_auth_status, name='check_auth_status'),
     path('current_user/', get_user, name="get user"),
+    # path('update_user/', update_categories, name="update user"),
+    
 ]

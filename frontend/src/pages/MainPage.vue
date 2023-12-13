@@ -25,11 +25,12 @@
           <label for="birthday">Birthday:</label><br>
           <input type="date" id="birthday" name="birthday" v-model="date_of_birth" required><br><br>
           <label for="email">Email:</label><br>
-          <input type="text" id="email" name="email" v-model="email" required><br><br>
+          <input type="email" id="email" name="email" v-model="email" required><br><br>
           <label for="profile_picture">Profile picture:</label><br>
           <input type="file" id="img" name="img" accept="image/*" required><br><br>
 
-          <label for="preferences">Preferences (Your current preferences are {{ authStore.user?.preferences }})</label><br>
+          <label for="preferences">Preferences (Your current preferences are {{ authStore.user?.preferences
+          }})</label><br>
           <div class="preferences">
             <input type="checkbox" id="Finance" name="FinanceBox" v-model="checkedPrefs" value="Finance">
             <label for="FinanceCheckbox">Finance</label><br>
@@ -56,6 +57,7 @@ import { defineComponent } from "vue";
 import ArticleView from "../components/ArticleView.vue";
 import { useAuthStore } from "../../auth.ts";
 import Article from "../utils/models/Article";
+import User from "../utils/models/User"
 import API from '../utils/api'
 
 
@@ -70,11 +72,12 @@ export default defineComponent({
   data() {
     return {
       response_data: [] as Article[],
-      date_of_birth: '',
+      current_user_data: {} as User,
+      date_of_birth: Date,
       email: '',
       profile_picture: Image,
       preferences: [] as String[],
-      checkedPrefs: [],
+      checkedPrefs: [] as String[],
     }
   },
   async mounted() {
@@ -88,7 +91,7 @@ export default defineComponent({
     }
   },
   methods: {
-    async getUpdatesDetails() {
+    async getUpdatedDetails() {
       const response = await fetch("http://localhost:8000/articles/")
       this.response_data = await response.json()
       console.log(this.response_data)
@@ -97,21 +100,22 @@ export default defineComponent({
       console.log(this.checkedPrefs);
 
       // const authStore = useAuthStore();
-      // const response = await fetch('http://localhost:8000/api/update_person', {
-      //   method: 'PUT',
 
-      //   body: JSON.stringify({
-      //     "id": authStore.$id,
-      //     "birthday": this.date_of_birth,
-      //     "email": this.email,
-      //     // "image": this.profile_picture,
-      //     "preferences": this.checkedPrefs
-      //   })
-      // })
-
+      // if (authStore.user != undefined){
+      //   authStore.user.preferences = this.checkedPrefs
+      // }
+      const data = JSON.stringify({
+        // "id": "this.authStore.user?.id",
+        "date_of_birth": this.date_of_birth,
+        "email": this.email,
+        // "profile_picture": "this.profile_picture",
+        "preferences": this.checkedPrefs,
+      })
+      const response = await API.updatePreferences(data)
+      console.log(response)
       // console.log(response)
 
-      // await this.getUpdatesDetails()
+      // await this.getUpdatedDetails()
     },
   },
 

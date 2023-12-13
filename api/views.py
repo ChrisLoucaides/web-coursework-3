@@ -12,7 +12,6 @@ from .forms import SignupForm, LoginForm
 from .models import ArticleComment, Article, SiteUser, Category
 from .serialisers import CommentReadSerialiser, CommentWriteSerialiser, UserSerialiser, ArticleSerialiser
 
-
 def check_auth_status(request):
     return JsonResponse({'is_authenticated': True})
 
@@ -100,12 +99,19 @@ class UserViewSet(mixins.CreateModelMixin, GenericViewSet):
 
         return Response(serialiser.data)
     
-    @action(detail=False, methods=['PUT'])
+    @action(detail=False, methods=['PATCH'])
     def update_categories(self, request, *args, **kwarg):
         cookie = request.COOKIES.get('user_id')
-        serialiser = self.get_serializer(SiteUser.objects.get(id=cookie), many=False)
-
-        return Response(serialiser.data)
+        user = SiteUser.objects.get(id=cookie)
+        print("request.data is BELOW")
+        print(request.data)
+        new_preferences = request.data
+        print(type(new_preferences))
+        user.category.set(Category.objects.filter(name__in=new_preferences['preferences']))
+        user.save()
+        print(user.category)
+        
+        return Response('User preferences updated')
     
 
 class ArticleViewSet(ModelViewSet):
