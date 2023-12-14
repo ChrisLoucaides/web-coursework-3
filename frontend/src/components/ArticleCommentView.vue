@@ -102,62 +102,63 @@
 </style>
 
 <template>
-  <div v-if="isSkeleton" class="comment placeholder-glow">
-    <div class="comment-side">
-      <div class="placeholder profile-img"></div>
+    <div v-if="isSkeleton" class="comment placeholder-glow">
+        <div class="comment-side">
+            <div class="placeholder profile-img"></div>
+        </div>
+        <div class="comment-content">
+            <div class="user-details">
+                <span class="placeholder col-1"></span>
+                <span class="placeholder col-1"></span>
+            </div>
+
+            <span class="placeholder col-4"></span>
+
+        </div>
     </div>
-    <div class="comment-content">
-      <div class="user-details">
-        <span class="placeholder col-1"></span>
-        <span class="placeholder col-1"></span>
-      </div>
-
-      <span class="placeholder col-4"></span>
-
-    </div>
-  </div>
 
 
-  <div v-if="!isSkeleton && comment" class="comment">
-    <div class="comment-side">
-      <img
-          class="profile-img"
-          :src="(comment.user as User).profile_picture"
-          alt="user profile picture"/>
-      <div v-if="comment.replies?.length > 0" class="vl"/>
-    </div>
-    <div class="comment-content">
-      <div class="user-details">
-        <p class="username">{{ user?.username }}</p>
-        <p class="date">{{ displayDate }}</p>
-        <i v-if="comment.updated_date" class="bi-pencil" data-bs-toggle="tooltip" data-bs-placement="top"
-           :data-bs-title="`Edited at ${comment.updated_date}`"></i>
+    <div v-if="!isSkeleton && comment" class="comment">
+        <div class="comment-side">
+            <img
+                    class="profile-img"
+                    :src="(comment.user as User).profile_picture"
+                    alt="user profile picture"/>
+            <div v-if="comment.replies?.length > 0" class="vl"/>
+        </div>
+        <div class="comment-content">
+            <div class="user-details">
+                <p class="username">{{ user?.username }}</p>
+                <p class="date">{{ displayDate }}</p>
+                <i v-if="comment.updated_date" class="bi-pencil" data-bs-toggle="tooltip" data-bs-placement="top"
+                   :data-bs-title="`Edited at ${comment.updated_date}`"></i>
 
-      </div>
+            </div>
 
-      <div v-if="inEditMode" class="editForm">
+            <div v-if="inEditMode" class="editForm">
         <textarea class="form-control form-multiline" :placeholder="comment.comment_text"
                   v-model="editedText"></textarea>
-        <button @click="editComment" class="btn btn-primary">Save</button>
-      </div>
-      <span v-else>{{ comment.comment_text }}</span>
+                <button @click="editComment" class="btn btn-primary">Save</button>
+            </div>
+            <span v-else>{{ comment.comment_text }}</span>
 
 
-      <div class="comment-actions">
-        <button v-if="!inEditMode" @click="toggleReplyForm">{{ replyFormOpen ? 'Cancel' : 'Reply' }}</button>
-        <button v-if="isOwned" @click="toggleEditMode">{{ inEditMode ? 'Cancel' : 'Edit' }}</button>
-        <button v-if="isOwned && !inEditMode" @click="deleteComment">Delete</button>
-      </div>
+            <div class="comment-actions">
+                <button v-if="!inEditMode" @click="toggleReplyForm">{{ replyFormOpen ? 'Cancel' : 'Reply' }}</button>
+                <button v-if="isOwned" @click="toggleEditMode">{{ inEditMode ? 'Cancel' : 'Edit' }}</button>
+                <button v-if="isOwned && !inEditMode" @click="deleteComment">Delete</button>
+            </div>
 
-      <PostCommentView v-if="replyFormOpen" @comment-posted="postComment" :reply-to="comment.id"/>
+            <PostCommentView v-if="replyFormOpen" @comment-posted="postComment" :reply-to="comment.id"/>
 
-      <div class="replies">
-        <ArticleCommentView v-for="reply in comment.replies ?? []" :key="reply.id" :comment="reply"
-                            @comment-posted="postComment" @comment-edited="onCommentEdited" @comment-deleted="onCommentDeleted"/>
-      </div>
+            <div class="replies">
+                <ArticleCommentView v-for="reply in comment.replies ?? []" :key="reply.id" :comment="reply"
+                                    @comment-posted="postComment" @comment-edited="onCommentEdited"
+                                    @comment-deleted="onCommentDeleted"/>
+            </div>
+        </div>
+
     </div>
-
-  </div>
 </template>
 
 <script lang="ts">
@@ -169,78 +170,78 @@ import User from "../utils/models/User.ts";
 import {useAuthStore} from "../../auth.ts";
 
 export default defineComponent({
-  name: "ArticleCommentView",
-  components: {PostCommentView},
-  emits: ['comment-posted', 'comment-edited', 'comment-deleted'],
-  setup() {
-    const authStore = useAuthStore()
+    name: "ArticleCommentView",
+    components: {PostCommentView},
+    emits: ['comment-posted', 'comment-edited', 'comment-deleted'],
+    setup() {
+        const authStore = useAuthStore()
 
-    return {authStore}
-  },
-  props: {
-    comment: {
-      type: Object as PropType<ArticleComment>,
+        return {authStore}
     },
-    isSkeleton: {
-      type: Boolean,
-    }
-  },
-  data() {
-    return {
-      replyFormOpen: false,
-      inEditMode: false,
-      editedText: ""
-    }
-  },
-  computed: {
-    displayDate(): string {
-      return "Now";
+    props: {
+        comment: {
+            type: Object as PropType<ArticleComment>,
+        },
+        isSkeleton: {
+            type: Boolean,
+        }
     },
-    user(): User {
-      return this.comment?.user as User;
+    data() {
+        return {
+            replyFormOpen: false,
+            inEditMode: false,
+            editedText: ""
+        }
     },
-    isOwned(): boolean {
-      return (this.comment?.user as User)?.id === this.authStore?.user?.id;
-    }
-  },
-  mounted() {
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-    [...tooltipTriggerList].map(tooltipTriggerEl => new Tooltip(tooltipTriggerEl));
-    this.editedText = this.comment?.comment_text ?? ""
-  },
-  methods: {
-    toggleEditMode() {
-      this.inEditMode = !this.inEditMode;
-      if (this.inEditMode) {
+    computed: {
+        displayDate(): string {
+            return <string> this.comment?.created_date;
+        },
+        user(): User {
+            return this.comment?.user as User;
+        },
+        isOwned(): boolean {
+            return (this.comment?.user as User)?.id === this.authStore?.user?.id;
+        }
+    },
+    mounted() {
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        [...tooltipTriggerList].map(tooltipTriggerEl => new Tooltip(tooltipTriggerEl));
         this.editedText = this.comment?.comment_text ?? ""
-      }
     },
-    toggleReplyForm() {
-      this.replyFormOpen = !this.replyFormOpen;
-    },
-    postComment(comment: UpdateComment) {
-      this.replyFormOpen = false;
-      this.$emit('comment-posted', comment as UpdateComment);
-    },
-    editComment() {
-      this.inEditMode = false;
-      this.$emit('comment-edited', {
-        text: this.editedText,
-        reply_to: this.comment?.parent_comment,
-        id: this.comment?.id
-      } as UpdateComment)
-    },
-    onCommentEdited(comment: UpdateComment) {
-      this.$emit('comment-edited', comment as UpdateComment);
-    },
-    async deleteComment() {
-      if (confirm('Are you sure you want to delete this comment?')) {
-        this.$emit('comment-deleted', this.comment?.id ?? 0)
-      }
-    },
-    onCommentDeleted(id: number) {
-      this.$emit('comment-deleted', id);
+    methods: {
+        toggleEditMode() {
+            this.inEditMode = !this.inEditMode;
+            if (this.inEditMode) {
+                this.editedText = this.comment?.comment_text ?? ""
+            }
+        },
+        toggleReplyForm() {
+            this.replyFormOpen = !this.replyFormOpen;
+        },
+        postComment(comment: UpdateComment) {
+            this.replyFormOpen = false;
+            this.$emit('comment-posted', comment as UpdateComment);
+        },
+        editComment() {
+            this.inEditMode = false;
+            this.$emit('comment-edited', {
+                text: this.editedText,
+                reply_to: this.comment?.parent_comment,
+                id: this.comment?.id
+            } as UpdateComment)
+        },
+        onCommentEdited(comment: UpdateComment) {
+            this.$emit('comment-edited', comment as UpdateComment);
+        },
+        async deleteComment() {
+            if (confirm('Are you sure you want to delete this comment?')) {
+                this.$emit('comment-deleted', this.comment?.id ?? 0)
+            }
+        },
+        onCommentDeleted(id: number) {
+            this.$emit('comment-deleted', id);
+        }
     }
-  }
 })
 </script>
