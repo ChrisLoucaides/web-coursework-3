@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import mixins
 from rest_framework.decorators import action
+from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from .forms import SignupForm, LoginForm
 from .models import ArticleComment, Article, SiteUser, Category
 from .serialisers import CommentReadSerialiser, CommentWriteSerialiser, UserSerialiser, ArticleSerialiser
@@ -52,7 +53,7 @@ def user_signup(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('home')  # TODO WEB-2: Replace with login page?
+            return redirect('login')
     else:
         form = SignupForm()
     return render(request, 'signup.html', {'form': form})
@@ -70,6 +71,7 @@ class UserViewSet(mixins.CreateModelMixin, GenericViewSet):
     """
     A ViewSet for operations related to users
     """
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
 
     queryset = SiteUser.objects.all()
 
@@ -118,6 +120,17 @@ class UserViewSet(mixins.CreateModelMixin, GenericViewSet):
         user.save()
 
         return Response('User details updated', status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['PUT'])
+    def update_profile_picture(self, request, *args, **kwargs):
+        cookie = request.COOKIES.get('user_id')
+        user = SiteUser.objects.get(id=cookie)
+
+        if 'profile_picture' in request.FILES:
+            user.profile_picture = request.FILES['profile_picture']
+            user.save()
+
+        return Response('Profile picture updated', status=status.HTTP_200_OK)
 
 
 class ArticleViewSet(ModelViewSet):

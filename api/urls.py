@@ -36,8 +36,6 @@ router = routers.DefaultRouter()
 router.register(r'article/(?P<article_id>\d+)/comments', CommentsViewSet, basename='Comments')
 router.register(r'users', UserViewSet, basename='Users')
 router.register(r'articles', ArticleViewSet, basename='Articles')
-# router.register(r'update_user', UserViewSet, basename='update_user')
-# router.register(r'article=', Art, basename='Comments')
 
 urlpatterns = [
     path('', user_login, name='login'),
