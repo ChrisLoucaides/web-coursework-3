@@ -3,6 +3,6 @@ export default interface User {
   username: string;
   date_of_birth: Date;
   email: String;
-  profile_picture: File;
+  profile_picture: String;
   preferences: string[];
 }
