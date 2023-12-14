@@ -1,16 +1,15 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
-import {left} from "@popperjs/core";
 
 export default defineComponent({
-  name: "Pill",
+  name: "PillFilter",
   props: {
     textContent: {
       type: String,
       required: true
     },
-    leftIcon: {
-      type: String,
+    isActivated: {
+      type: Boolean,
       required: false
     }
   }
@@ -18,8 +17,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="pill">
-      <i v-if="leftIcon" :class="leftIcon"></i>
+  <div :class="isActivated ? 'pill active' : 'pill'">
       <span>{{textContent}}</span>
   </div>
 </template>
@@ -36,5 +34,18 @@ export default defineComponent({
   min-width: 5rem;
   width: fit-content;
   gap: 0.5rem;
+  padding: 0.5rem;
+  transition: 0.3s ease-in-out;
+  cursor: pointer;
 }
+
+.active {
+  background-color: #007AFF;
+  color: white;
+}
+
+.pill:hover {
+  transform: scale(1.1);
+}
+
 </style>

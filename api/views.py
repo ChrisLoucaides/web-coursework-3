@@ -43,12 +43,6 @@ def user_login(request):
     return render(request, 'login.html', {'form': form})
 
 
-def get_user(request):
-    id_from_cookie = request.COOKIES.get('user_id')
-    user = SiteUser.objects.get(id = id_from_cookie)
-    return user
-
-
 def user_signup(request):
     """
     Allows a user to sign up to the site
@@ -70,18 +64,6 @@ def user_logout(request):
     """
     auth.logout(request)
     return redirect("")
-
-
-def main_spa(request: HttpRequest) -> HttpResponse:
-    return render(request, 'api/spa/index.html', {})
-
-
-def get_articles(request):
-    if request.method == 'GET':
-        articles = list(Article.objects.values())
-        return JsonResponse(articles, safe=False, status=200)
-    else:
-        return JsonResponse(content="invalid request method", status=400, data="")
 
 
 class UserViewSet(mixins.CreateModelMixin, GenericViewSet):

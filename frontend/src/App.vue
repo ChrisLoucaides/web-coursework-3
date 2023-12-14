@@ -3,7 +3,6 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-success">
       <div class="container">
          <router-link class="navbar-brand" :to="{ name: 'Main Page' }"><img src="./assets/Sky%20News%202.png" alt="" style="width: 10em;"></router-link>
-         <router-link class="navbar-brand" :to="{ name: 'Other Page' }" style="color: white;">Other Page</router-link>
 
         <button @click="logout" class="btn btn-danger ml-auto">Logout</button>
       </div>
