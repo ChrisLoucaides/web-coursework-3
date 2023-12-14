@@ -43,7 +43,7 @@ router.register(r'articles', ArticleViewSet, basename='Articles')
 urlpatterns = [
     path('', user_login, name='login'),
     path('api/', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls')),  # Include this line for the browsable API
+    path('api-auth/', include('rest_framework.urls')),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('signup/', user_signup, name="signup"),
     path('login/', user_login, name='login'),

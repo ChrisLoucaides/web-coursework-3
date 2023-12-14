@@ -60,9 +60,11 @@ class API {
         console.log(response.json())
 
         return response.status
-        // return await result.json() as Article[];
     }
-
+    /**
+     * Updates the user's profile picture
+     * @param formData The form with the profile picture to be updated
+     */
     static async updateProfilePicture(formData: FormData): Promise<any> {
         try {
             const csrftoken = Cookies.get('csrftoken') || 'BLAHBLAH';

@@ -2,7 +2,7 @@ import datetime
 
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import auth
-from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from rest_framework import status
@@ -17,6 +17,9 @@ from .serialisers import CommentReadSerialiser, CommentWriteSerialiser, UserSeri
 
 
 def check_auth_status(request):
+    """
+    Checks if the user is authenticated
+    """
     return JsonResponse({'is_authenticated': True})
 
 
@@ -85,20 +88,6 @@ class UserViewSet(mixins.CreateModelMixin, GenericViewSet):
 
         return Response(serialiser.data)
 
-    @action(detail=False, methods=['PATCH'])  # TODO: WEB-9 get rid of this and use below method (update_user)
-    def update_categories(self, request, *args, **kwarg):
-        cookie = request.COOKIES.get('user_id')
-        user = SiteUser.objects.get(id=cookie)
-        print("request.data is BELOW")
-        print(request.data)
-        new_preferences = request.data
-        print(type(new_preferences))
-        user.category.set(Category.objects.filter(name__in=new_preferences['preferences']))
-        user.save()
-        print(user.category)
-
-        return Response('User preferences updated')
-
     @action(detail=False, methods=['PATCH'])
     def update_user(self, request, *args, **kwargs):
         cookie = request.COOKIES.get('user_id')
@@ -159,12 +148,18 @@ class CommentsViewSet(mixins.CreateModelMixin, GenericViewSet):
     queryset = ArticleComment.objects.all()
 
     def get_serializer_class(self):
+        """
+        Returns the appropriate Comment serialiser
+        """
         if self.action in ['list', 'retrieve']:
             return CommentReadSerialiser
         else:
             return CommentWriteSerialiser
 
     def get_queryset(self):
+        """
+        Returns all comments for a specific article
+        """
         article_id = self.kwargs.get('article_id')
         if 'pk' in self.kwargs:
             return ArticleComment.objects.filter(article_id=article_id)
