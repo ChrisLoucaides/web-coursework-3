@@ -19,6 +19,8 @@ from rest_framework import routers, permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from .views import CommentsViewSet, UserViewSet, ArticleViewSet, user_signup, user_login, user_logout, check_auth_status
+from django.conf import settings
+from django.conf.urls.static import static
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -48,3 +50,5 @@ urlpatterns = [
     path('logout/', user_logout, name='logout'),
     path('check-auth-status/', check_auth_status, name='check_auth_status'),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

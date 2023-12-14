@@ -13,7 +13,7 @@ class Category(models.Model):
 
 
 class SiteUser(AbstractUser):
-    profile_picture = models.ImageField()
+    profile_picture = models.ImageField(upload_to='images/')
     date_of_birth = models.DateField()
     category = models.ManyToManyField(Category, related_name='user')
     REQUIRED_FIELDS = ['email', 'profile_picture', 'date_of_birth']
