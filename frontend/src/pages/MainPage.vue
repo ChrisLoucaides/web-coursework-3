@@ -1,17 +1,19 @@
 <template>
-  <!-- Trigger for Profile -->
-    <div class="EditProfile">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-            Edit Profile
+
+    <div class="d-flex justify-content-center align-items-center ms-auto">
+        <!-- Trigger for Profile -->
+        <div class="EditProfile me-3">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                Edit Profile
+            </button>
+        </div>
+
+        <!-- Trigger for Profile Picture -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Edit Profile Picture
         </button>
     </div>
 
-    <br>
-
-  <!-- Trigger for Profile Picture -->
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-        Edit Profile Picture
-    </button>
 
   <!--Profile Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -23,7 +25,8 @@
                 </div>
                 <div class="modal-body">
                     <label for="profile_picture">Profile picture:</label><br>
-                    <input type="file" id="profile-picture" name="image" accept="image" @change="handleFileChange"><br><br>
+                    <input type="file" id="profile-picture" name="image" accept="image"
+                           @change="handleFileChange"><br><br>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -86,9 +89,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import {defineComponent} from "vue";
 import ArticlePreview from "../components/ArticlePreview.vue";
-import { useAuthStore } from "../../auth.ts";
+import {useAuthStore} from "../../auth.ts";
 import Article from "../utils/models/Article";
 import User from "../utils/models/User";
 import API from "../utils/api";
@@ -96,100 +99,100 @@ import PillFilter from "../components/PillFilter.vue";
 import NoArticles from "../components/NoArticles.vue";
 
 export default defineComponent({
-  components: { NoArticles, PillFilter, ArticlePreview },
+    components: {NoArticles, PillFilter, ArticlePreview},
 
-  setup() {
-    const authStore = useAuthStore();
+    setup() {
+        const authStore = useAuthStore();
 
-    return { authStore };
-  },
-  data() {
-    return {
-      isLoading: true,
-      articles: [] as Article[],
-      current_user_data: {} as User,
-      date_of_birth: Date,
-      email: "",
-      profile_picture: null as File | null, // Store the file here
-      preferences: [] as string[],
-      checkedPrefs: [] as string[],
-      filteredCategory: "",
-      filterCategories: [] as string[],
-    };
-  },
-  async mounted() {
-    if (this.authStore.isAuthenticated) {
-      await this.fetchArticles();
-    } else {
-      console.log("No user");
-    }
-    this.isLoading = false;
-  },
-  methods: {
-    handleFileChange(event: Event) {
-      const input = event.target as HTMLInputElement;
-      this.profile_picture = input.files?.[0];
-      console.log(this.profile_picture);
+        return {authStore};
     },
-    async fetchArticles() {
-      this.filterCategories = ["All", ...(this.authStore.user?.preferences ?? [])];
-      this.filteredCategory = "All";
-      const resp = await API.fetchArticles();
-      this.articles = resp;
+    data() {
+        return {
+            isLoading: true,
+            articles: [] as Article[],
+            current_user_data: {} as User,
+            date_of_birth: Date,
+            email: "",
+            profile_picture: null as File | null, // Store the file here
+            preferences: [] as string[],
+            checkedPrefs: [] as string[],
+            filteredCategory: "",
+            filterCategories: [] as string[],
+        };
     },
-    setFilter(filter: string) {
-      this.filteredCategory = filter;
-    },
-    async updateDetails() {
-      console.log(this.checkedPrefs);
-
-      const authStore = useAuthStore();
-
-      const data = JSON.stringify({
-        "date_of_birth": this.date_of_birth,
-        "email": this.email,
-        "preferences": this.checkedPrefs,
-      });
-      console.log(data);
-      console.log("DA FIRTST ONES!");
-      console.log(typeof this.profile_picture);
-      const response = await API.updateUser(data);
-
-      if (response === 200) {
-        if (authStore.user != undefined) {
-          authStore.user.preferences = this.checkedPrefs;
-          if (this.date_of_birth != undefined) {
-            authStore.user.date_of_birth = new Date(this.date_of_birth.toString());
-            console.log(authStore.user.date_of_birth);
-          }
-          if (this.email != undefined) {
-            authStore.user.email = this.email;
-            console.log(authStore.user.email);
-          }
-          if (this.profile_picture != undefined) {
-            authStore.user.profile_picture = this.profile_picture;
-            console.log(authStore.user.profile_picture);
-          }
+    async mounted() {
+        if (this.authStore.isAuthenticated) {
+            await this.fetchArticles();
+        } else {
+            console.log("No user");
         }
-        await this.fetchArticles();
-      }
+        this.isLoading = false;
     },
-    async updateProfilePicture() {
-      if (this.profile_picture) {
-        const formData = new FormData();
-        formData.append("profile_picture", this.profile_picture);
+    methods: {
+        handleFileChange(event: Event) {
+            const input = event.target as HTMLInputElement;
+            this.profile_picture = input.files?.[0];
+            console.log(this.profile_picture);
+        },
+        async fetchArticles() {
+            this.filterCategories = ["All", ...(this.authStore.user?.preferences ?? [])];
+            this.filteredCategory = "All";
+            const resp = await API.fetchArticles();
+            this.articles = resp;
+        },
+        setFilter(filter: string) {
+            this.filteredCategory = filter;
+        },
+        async updateDetails() {
+            console.log(this.checkedPrefs);
 
-        try {
-          const response = await API.updateProfilePicture(formData);
-          await this.fetchArticles();
-        } catch (error) {
-          console.error(error);
-        }
-      } else {
-        console.warn("No profile picture selected");
-      }
+            const authStore = useAuthStore();
+
+            const data = JSON.stringify({
+                "date_of_birth": this.date_of_birth,
+                "email": this.email,
+                "preferences": this.checkedPrefs,
+            });
+            console.log(data);
+            console.log("DA FIRTST ONES!");
+            console.log(typeof this.profile_picture);
+            const response = await API.updateUser(data);
+
+            if (response === 200) {
+                if (authStore.user != undefined) {
+                    authStore.user.preferences = this.checkedPrefs;
+                    if (this.date_of_birth != undefined) {
+                        authStore.user.date_of_birth = new Date(this.date_of_birth.toString());
+                        console.log(authStore.user.date_of_birth);
+                    }
+                    if (this.email != undefined) {
+                        authStore.user.email = this.email;
+                        console.log(authStore.user.email);
+                    }
+                    if (this.profile_picture != undefined) {
+                        authStore.user.profile_picture = this.profile_picture;
+                        console.log(authStore.user.profile_picture);
+                    }
+                }
+                await this.fetchArticles();
+            }
+        },
+        async updateProfilePicture() {
+            if (this.profile_picture) {
+                const formData = new FormData();
+                formData.append("profile_picture", this.profile_picture);
+
+                try {
+                    const response = await API.updateProfilePicture(formData);
+                    await this.fetchArticles();
+                } catch (error) {
+                    console.error(error);
+                }
+            } else {
+                console.warn("No profile picture selected");
+            }
+        },
     },
-  },
 });
 </script>
 
