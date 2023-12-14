@@ -175,7 +175,7 @@ class CommentsViewSet(mixins.CreateModelMixin, GenericViewSet):
         """
         Returns all comments for a given requested article id
         """
-        serialiser = self.get_serializer(self.get_queryset().order_by('-created_date'), many=True)
+        serialiser = self.get_serializer(self.get_queryset().order_by('-created_date'), many=True, context={"request": request})
         return Response(serialiser.data)
 
     def create(self, request, *args, **kwargs):
@@ -196,7 +196,7 @@ class CommentsViewSet(mixins.CreateModelMixin, GenericViewSet):
         article_comment = ArticleComment(**comment)
         article_comment.save()
 
-        return_serialiser = CommentReadSerialiser(article_comment, many=False)
+        return_serialiser = CommentReadSerialiser(article_comment, many=False, context={"request": request})
         return Response(return_serialiser.data, status=status.HTTP_201_CREATED)
 
     def partial_update(self, request, *args, **kwargs):
@@ -214,7 +214,7 @@ class CommentsViewSet(mixins.CreateModelMixin, GenericViewSet):
         existing_comment.updated_date = datetime.datetime.now()
         existing_comment.save()
 
-        return_serialiser = CommentReadSerialiser(existing_comment, many=False)
+        return_serialiser = CommentReadSerialiser(existing_comment, many=False, context={"request": request})
         return Response(return_serialiser.data, status=status.HTTP_201_CREATED)
 
     def destroy(self, request, *args, **kwargs):

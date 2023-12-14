@@ -40,12 +40,15 @@ class CommentReadSerialiser(serializers.ModelSerializer):
     """
     Serialises an ArticleComment object into json, fetching the user and all comment fields
     """
-    user = UserSerialiser(read_only=True)
+    user = serializers.SerializerMethodField()
     replies = serializers.SerializerMethodField()
 
     def get_replies(self, obj):
-        serialiser = CommentReadSerialiser(obj.replies.all(), many=True)
+        serialiser = CommentReadSerialiser(obj.replies.all(), many=True, context=self.context)
         return serialiser.data
+
+    def get_user(self, obj):
+        return UserSerialiser(instance=obj.user, read_only=True, context=self.context).data
 
     class Meta:
         model = ArticleComment

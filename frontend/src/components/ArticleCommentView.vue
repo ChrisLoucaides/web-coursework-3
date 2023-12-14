@@ -13,6 +13,8 @@
   align-items: center;
 
   .profile-img {
+    min-width: 3rem;
+    min-height: 3rem;
     width: 3rem;
     height: 3rem;
     border-radius: 1.5rem;
@@ -120,7 +122,7 @@
     <div class="comment-side">
       <img
           class="profile-img"
-          src="https://static.vecteezy.com/system/resources/previews/007/404/147/original/cute-penguin-sleeping-cartoon-icon-illustration-animal-love-icon-concept-isolated-premium-flat-cartoon-style-vector.jpg"
+          :src="(comment.user as User).profile_picture"
           alt="user profile picture"/>
       <div v-if="comment.replies?.length > 0" class="vl"/>
     </div>
