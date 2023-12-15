@@ -1,63 +1,21 @@
-# Template for ECS639U Group Coursework
+# Repository and deployment:
 
-This template should be used as the starting point for your group coursework in the module ECS639U Web Programming (at Queen Mary University of London). Use Git (github.qmul.ac.uk) to collaborate on the coursework with your group members. Module leader: Paulo Oliva <[p.oliva@qmul.ac.uk](mailto:p.oliva@qmul.ac.uk)>
+### The repo for this project can be found [here](https://github.com/ChrisLoucaides/web-coursework-3)
 
-## Local development
+# Team members:
+* [Tom Knighton](https://github.com/Tom-Knighton) - Assigned to implement comments/replies
+* [Amir Hadzic](https://github.com/AmirH01) - Assigned to implement Articles
+* [Niamh Field](https://github.com/nevadafield) - Assigned to implement signup and create user models
+* [Christos Loucaides](https://github.com/ChrisLoucaides) - Assigned to implement login
 
-To run this project in your development machine, follow these steps:
+**While these were our 'assignments' we all worked on the entire codebase, as we often practiced pair programming, 
+it meant that each of us were able to work on a variety of areas**
 
-1. Create and activate a conda environment
+Screenshot of commit history can be found [here](https://imgur.com/a/1KDbNz8)
 
-2. Fork this repo and clone your fork (or clone the forked repo of one of your team members), e.g.
+Full commit history can be found [here](https://github.com/ChrisLoucaides/web-coursework-3/commits/main/)
 
-    ```console
-    $ git clone https://github.qmul.ac.uk/<username>/cwgroup
-    ```
+*Email ec20388@qmul.ac.uk for access to the repository
 
-3. Install Pyhton dependencies (main folder):
+# User information
 
-    ```console
-    $ pip install -r requirements.txt
-    ```
-
-4. Create a development database:
-
-    ```console
-    $ python manage.py migrate
-    ```
-
-5. Install JavaScript dependencies (from 'frontend' folder):
-
-    ```console
-    $ npm install
-    ```
-
-6. If everything is alright, you should be able to start the Django development server from the main folder:
-
-    ```console
-    $ python manage.py runserver
-    ```
-
-7. and the Vue server from the 'frontend' sub-folder:
-
-    ```console
-    $ npm run dev
-    ```
-
-8. Open your browser and go to http://localhost:5173, you will be greeted with a template page.
-
-## OpenShift deployment
-
-Once your project is ready to be deployed you will need to 'build' the Vue app and place it in Django's static folder.
-
-1. The build command in package.json and the vite.config.ts files have already been modified so that when running 'npm run build' the generated JavaScript and CSS files will be placed in the mainapp static folder, and the index.html file will be placed in the templates folder:
-
-    ```console
-    $ npm run build
-    ```
-
-2. You should then follow the instruction on QM+ on how to deploy your app on EECS's OpenShift live server.
-
-## License
-
-This code is dedicated to the public domain to the maximum extent permitted by applicable law, pursuant to [CC0](http://creativecommons.org/publicdomain/zero/1.0/).
