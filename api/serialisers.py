@@ -19,7 +19,9 @@ class UserSerialiser(serializers.ModelSerializer):
 
 
 class ArticleSerialiser(serializers.ModelSerializer):
-
+    """
+    Serialises an article, ignoring comments and replacing them with a simple count
+    """
     category = serializers.SerializerMethodField()
     comment_count = serializers.SerializerMethodField()
 

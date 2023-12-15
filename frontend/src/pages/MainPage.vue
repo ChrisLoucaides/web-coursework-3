@@ -3,24 +3,40 @@
     <div class="d-flex justify-content-center align-items-center ms-auto">
         <!-- Trigger for Profile -->
         <div class="EditProfile me-3">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#prefsModal">
                 Edit Profile
             </button>
         </div>
 
         <!-- Trigger for Profile Picture -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#profilePicModal">
             Edit Profile Picture
         </button>
     </div>
 
 
+    <div class="filters">
+        <PillFilter v-for="filter in filterCategories" :key="filter" :is-activated="filteredCategory === filter"
+                    :text-content="filter" @click="setFilter(filter)"/>
+    </div>
+    <div class="articlePreviews">
+        <ArticlePreview
+                v-for="article in articles.filter(a => filteredCategory === 'All' || filteredCategory === a.category)"
+                :key="article.id" :article="article">
+        </ArticlePreview>
+        <NoArticles
+                v-if="!isLoading && articles.filter(a => filteredCategory === 'All' || filteredCategory === a.category).length === 0"/>
+    </div>
+
+
+
+
   <!--Profile Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal" id="profilePicModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Update Profile Picture</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -36,21 +52,8 @@
         </div>
     </div>
 
-    <div class="filters">
-        <PillFilter v-for="filter in filterCategories" :key="filter" :is-activated="filteredCategory === filter"
-                    :text-content="filter" @click="setFilter(filter)"/>
-    </div>
-    <div class="articlePreviews">
-        <ArticlePreview
-                v-for="article in articles.filter(a => filteredCategory === 'All' || filteredCategory === a.category)"
-                :key="article.id" :article="article">
-        </ArticlePreview>
-        <NoArticles
-                v-if="!isLoading && articles.filter(a => filteredCategory === 'All' || filteredCategory === a.category).length === 0"/>
-    </div>
-
-  <!-- Modal -->
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  <!-- Preferences Modal -->
+    <div class="modal" id="prefsModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
          aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -93,10 +96,11 @@ import {defineComponent} from "vue";
 import ArticlePreview from "../components/ArticlePreview.vue";
 import {useAuthStore} from "../../auth.ts";
 import Article from "../utils/models/Article";
-import User from "../utils/models/User";
+import User, {UpdateDetails} from "../utils/models/User";
 import API from "../utils/api";
 import PillFilter from "../components/PillFilter.vue";
 import NoArticles from "../components/NoArticles.vue";
+import { Modal } from "bootstrap";
 
 export default defineComponent({
     components: {NoArticles, PillFilter, ArticlePreview},
@@ -111,7 +115,7 @@ export default defineComponent({
             isLoading: true,
             articles: [] as Article[],
             current_user_data: {} as User,
-            date_of_birth: Date,
+            date_of_birth: null as Date|null,
             email: "",
             profile_picture: null as File | null, // Store the file here
             preferences: [] as string[],
@@ -131,7 +135,7 @@ export default defineComponent({
     methods: {
         handleFileChange(event: Event) {
             const input = event.target as HTMLInputElement;
-            this.profile_picture = input.files?.[0];
+            this.profile_picture = input.files?.[0] ?? null;
             console.log(this.profile_picture);
         },
         async fetchArticles() {
@@ -144,37 +148,33 @@ export default defineComponent({
             this.filteredCategory = filter;
         },
         async updateDetails() {
-            console.log(this.checkedPrefs);
-
             const authStore = useAuthStore();
 
-            const data = JSON.stringify({
-                "date_of_birth": this.date_of_birth,
-                "email": this.email,
-                "preferences": this.checkedPrefs,
-            });
-            console.log(data);
-            console.log("DA FIRTST ONES!");
-            console.log(typeof this.profile_picture);
+            const data: UpdateDetails = {
+              date_of_birth: this.date_of_birth?.toISOString().split('T')[0] ?? '',
+              email: this.email,
+              preferences: this.checkedPrefs
+            };
+
             const response = await API.updateUser(data);
 
             if (response === 200) {
-                if (authStore.user != undefined) {
+                if (authStore.user) {
                     authStore.user.preferences = this.checkedPrefs;
-                    if (this.date_of_birth != undefined) {
+                    if (this.date_of_birth) {
                         authStore.user.date_of_birth = new Date(this.date_of_birth.toString());
-                        console.log(authStore.user.date_of_birth);
                     }
-                    if (this.email != undefined) {
+                    if (this.email) {
                         authStore.user.email = this.email;
-                        console.log(authStore.user.email);
-                    }
-                    if (this.profile_picture != undefined) {
-                        authStore.user.profile_picture = this.profile_picture;
-                        console.log(authStore.user.profile_picture);
                     }
                 }
                 await this.fetchArticles();
+                const modal = Modal.getInstance('#prefsModal')
+                if (modal) {
+                  modal.hide();
+                } else {
+                  alert('no modal')
+                }
             }
         },
         async updateProfilePicture() {
@@ -183,13 +183,20 @@ export default defineComponent({
                 formData.append("profile_picture", this.profile_picture);
 
                 try {
-                    const response = await API.updateProfilePicture(formData);
+                    await API.updateProfilePicture(formData);
                     await this.fetchArticles();
+
+                    const modal = Modal.getInstance('#profilePicModal')
+                    if (modal) {
+                      modal.hide();
+                    } else {
+                      alert('no modal')
+                    }
                 } catch (error) {
                     console.error(error);
                 }
             } else {
-                console.warn("No profile picture selected");
+                alert("No profile picture selected");
             }
         },
     },

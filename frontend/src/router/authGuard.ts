@@ -9,12 +9,8 @@ export const authGuard: NavigationGuard = async (_to, _from, next) => {
     const user_id = Cookies.get('user_id');
 
     if (user_id) {
-        // We want to grab the user from the API ideally here
-
         const response = await API.fetchUser()
         authStore.login(response);
-
-
     } else {
         authStore.logout();
     }

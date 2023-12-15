@@ -6,3 +6,9 @@ export default interface User {
   profile_picture: string;
   preferences: string[];
 }
+
+export interface UpdateDetails {
+  date_of_birth: string;
+  email: string;
+  preferences: string[];
+}

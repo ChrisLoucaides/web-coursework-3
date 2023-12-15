@@ -195,7 +195,7 @@ export default defineComponent({
     },
     computed: {
         displayDate(): string {
-            return <string> this.comment?.created_date;
+            return new Date(this.comment?.created_date ?? new Date()).toDateString() ?? "Now";
         },
         user(): User {
             return this.comment?.user as User;

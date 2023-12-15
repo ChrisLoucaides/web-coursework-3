@@ -13,6 +13,9 @@ class Category(models.Model):
 
 
 class SiteUser(AbstractUser):
+    """
+    A model representing a user of our site, inheriting from Django's AbstractUser
+    """
     profile_picture = models.ImageField(upload_to='images/')
     date_of_birth = models.DateField()
     category = models.ManyToManyField(Category, related_name='user')

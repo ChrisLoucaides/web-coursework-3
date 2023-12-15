@@ -5,7 +5,7 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import auth
 from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import QuerySet
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from rest_framework import status
@@ -84,17 +84,26 @@ class UserViewSet(mixins.CreateModelMixin, GenericViewSet):
     queryset: QuerySet = SiteUser.objects.all()
 
     def get_serializer_class(self) -> UserSerialiser.__class__:
+        """
+        Returns the user serialiser when requested
+        """
         return UserSerialiser
 
     @action(detail=False)
-    def current(self, request: WSGIRequest, *args, **kwarg) -> Response:
+    def current(self, request: HttpRequest, *args, **kwarg) -> Response:
+        """
+        Returns the current user based on the requester's cookies
+        """
         cookie: str = request.COOKIES.get('user_id')
         serialiser = self.get_serializer(SiteUser.objects.get(id=cookie), many=False)
 
         return Response(serialiser.data)
 
     @action(detail=False, methods=['PATCH'])
-    def update_user(self, request: WSGIRequest, *args, **kwargs) -> Response:
+    def update_user(self, request, *args, **kwargs) -> Response:
+        """
+        Updates the preference details of the current user
+        """
         cookie: str = request.COOKIES.get('user_id')
         user: SiteUser = SiteUser.objects.get(id=cookie)
 
@@ -128,9 +137,15 @@ class UserViewSet(mixins.CreateModelMixin, GenericViewSet):
 
 
 class ArticleViewSet(ModelViewSet):
+    """
+    A ViewSet for operations related to articles
+    """
     queryset: QuerySet = Article.objects.all()
 
     def get_serializer_class(self) -> ArticleSerialiser.__class__:
+        """
+        Returns the article serialiser
+        """
         return ArticleSerialiser
 
     def list(self, request, *args, **kwargs) -> Response:

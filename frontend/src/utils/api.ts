@@ -1,5 +1,5 @@
 import ArticleComment from "./models/ArticleComment.ts";
-import User from './models/User.ts'
+import User, {UpdateDetails} from './models/User.ts'
 import Article from "./models/Article.ts";
 import Cookies from "js-cookie";
 
@@ -41,19 +41,23 @@ class API {
         return await result.json() as Article;
     }
 
-    //TODO: Typescript-ify this (pls make interface and send here :))
-    static updateUser = async (json: any): Promise<number> => {
-        var csrftoken = Cookies.get('csrftoken')
-        if (csrftoken == null) {
-            csrftoken = 'BLAHBLAH'
+    /**
+     * Updates the email, DOB and preferences for a user
+     * @param details The details to be updated
+     */
+    static updateUser = async (details: UpdateDetails): Promise<number> => {
+        const csrftoken = Cookies.get('csrftoken');
+        if (!csrftoken) {
+            throw Error("No CSRF Token found");
         }
+
         const header = new Headers()
         header.append('X-CSRFToken', csrftoken)
         header.append('content-type', 'application/json')
         const response = await fetch(`${this.url}users/update_user/`, {
             method: 'PATCH',
             headers: header,
-            body: json,
+            body: JSON.stringify(details),
             credentials: 'include',
         });
         console.log(response)
@@ -67,8 +71,10 @@ class API {
      */
     static async updateProfilePicture(formData: FormData): Promise<any> {
         try {
-            const csrftoken = Cookies.get('csrftoken') || 'BLAHBLAH';
-
+            const csrftoken = Cookies.get('csrftoken');
+            if (!csrftoken) {
+                throw Error("No CSRF Token found");
+            }
             const response = await fetch(`${this.url}users/update_profile_picture/`, {
                 method: 'PUT',
                 headers: {
@@ -95,9 +101,9 @@ class API {
      * @param comment The new comment model
      */
     static postComment = async (articleId: number, comment: ArticleComment): Promise<ArticleComment> => {
-        let csrftoken = Cookies.get('csrftoken')
-        if (csrftoken == null) {
-            csrftoken = 'BLAHBLAH'
+        const csrftoken = Cookies.get('csrftoken');
+        if (!csrftoken) {
+            throw Error("No CSRF Token found");
         }
         const header = new Headers()
         header.append('X-CSRFToken', csrftoken)
@@ -119,9 +125,9 @@ class API {
      * @param comment_text The new text to replace with
      */
     static editComment = async (articleId: number, commentId: number, comment_text: string): Promise<ArticleComment> => {
-        let csrftoken = Cookies.get('csrftoken')
-        if (csrftoken == null) {
-            csrftoken = 'BLAHBLAH'
+        const csrftoken = Cookies.get('csrftoken');
+        if (!csrftoken) {
+            throw Error("No CSRF Token found");
         }
         const header = new Headers()
         header.append('X-CSRFToken', csrftoken)
@@ -139,9 +145,9 @@ class API {
     }
 
     static deleteComment = async (articleId: number, commentId: number) => {
-        let csrftoken = Cookies.get('csrftoken')
-        if (csrftoken == null) {
-            csrftoken = 'BLAHBLAH'
+        const csrftoken = Cookies.get('csrftoken');
+        if (!csrftoken) {
+            throw Error("No CSRF Token found");
         }
         const header = new Headers()
         header.append('X-CSRFToken', csrftoken)
