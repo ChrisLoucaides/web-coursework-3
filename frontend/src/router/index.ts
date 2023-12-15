@@ -6,7 +6,6 @@ import OtherPage from '../pages/OtherPage.vue';
 import TestCommentsPage from '../pages/TestCommentPage.vue';
 import TestArticlePage from '../pages/TestArticlePage.vue';
 
-//@ts-ignore
 import DjangoLoginPage from "../pages/DjangoLoginPage.vue";
 import {authGuard} from "./authGuard.ts";
 import ArticlePage from "../pages/ArticlePage.vue";
