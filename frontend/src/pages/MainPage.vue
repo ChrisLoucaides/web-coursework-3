@@ -29,8 +29,6 @@
     </div>
 
 
-
-
   <!--Profile Modal -->
     <div class="modal" id="profilePicModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -100,7 +98,7 @@ import User, {UpdateDetails} from "../utils/models/User";
 import API from "../utils/api";
 import PillFilter from "../components/PillFilter.vue";
 import NoArticles from "../components/NoArticles.vue";
-import { Modal } from "bootstrap";
+import {Modal} from "bootstrap";
 
 export default defineComponent({
     components: {NoArticles, PillFilter, ArticlePreview},
@@ -115,7 +113,7 @@ export default defineComponent({
             isLoading: true,
             articles: [] as Article[],
             current_user_data: {} as User,
-            date_of_birth: null as Date|null,
+            date_of_birth: null as Date | null,
             email: "",
             profile_picture: null as File | null, // Store the file here
             preferences: [] as string[],
@@ -151,9 +149,9 @@ export default defineComponent({
             const authStore = useAuthStore();
 
             const data: UpdateDetails = {
-              date_of_birth: this.date_of_birth?.toISOString().split('T')[0] ?? '',
-              email: this.email,
-              preferences: this.checkedPrefs
+                date_of_birth: this.date_of_birth?.toISOString().split('T')[0] ?? '',
+                email: this.email,
+                preferences: this.checkedPrefs
             };
 
             const response = await API.updateUser(data);
@@ -171,9 +169,9 @@ export default defineComponent({
                 await this.fetchArticles();
                 const modal = Modal.getInstance('#prefsModal')
                 if (modal) {
-                  modal.hide();
+                    modal.hide();
                 } else {
-                  alert('no modal')
+                    alert('no modal')
                 }
             }
         },
@@ -188,9 +186,9 @@ export default defineComponent({
 
                     const modal = Modal.getInstance('#profilePicModal')
                     if (modal) {
-                      modal.hide();
+                        modal.hide();
                     } else {
-                      alert('no modal')
+                        alert('no modal')
                     }
                 } catch (error) {
                     console.error(error);
