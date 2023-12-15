@@ -14,18 +14,6 @@
             <RouterView class="flex-shrink-0"/>
         </main>
     </div>
-    <footer class="footer fixed-bottom py-3 bg-dark">
-        <div class="container text-center text-white">
-            <p>&copy; {{ currentYear }} Sky News 2</p>
-            <p>Web app developed by:</p>
-            <div class="contributors">
-                <a href="https://tomk." class="contributor-link">Tom Knighton</a>
-                <a href="https://chrisloucaides.com" class="contributor-link">Christos Loucaides</a>
-                <a href="https://github.com/AmirH01" class="contributor-link">Amir Hadzic</a>
-                <a href="https://github.com/nevadafield" class="contributor-link">Niamh Field</a>
-            </div>
-        </div>
-    </footer>
 </template>
 
 <script lang="ts">
@@ -59,21 +47,4 @@ export default defineComponent({
 body {
     font-family: 'Nunito', sans-serif !important;
 }
-
-.contributors {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.contributor-link {
-    margin-right: 2em;
-    text-decoration: none;
-    color: #36d072;
-}
-
-.contributor-link:hover {
-    color: #abd5c2;
-}
-
 </style>
