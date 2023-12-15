@@ -17,13 +17,12 @@
 </template>
 
 <script lang="ts">
-import ArticleView from './components/ArticleView.vue';
 import {defineComponent} from 'vue';
 import {RouterView} from 'vue-router';
 import {useAuthStore} from '../auth.ts';
 
 export default defineComponent({
-    components: {RouterView, ArticleView},
+    components: {RouterView},
     name: 'app',
     data() {
         return {

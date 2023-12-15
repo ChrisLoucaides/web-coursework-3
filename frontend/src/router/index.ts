@@ -3,8 +3,6 @@ import {createRouter, createWebHistory} from 'vue-router'
 
 import MainPage from '../pages/MainPage.vue';
 import OtherPage from '../pages/OtherPage.vue';
-import TestCommentsPage from '../pages/TestCommentPage.vue';
-import TestArticlePage from '../pages/TestArticlePage.vue';
 
 import DjangoLoginPage from "../pages/DjangoLoginPage.vue";
 import {authGuard} from "./authGuard.ts";
@@ -19,8 +17,6 @@ const router = createRouter({
         {path: '/', name: 'Main Page', component: MainPage},
         {path: '/other/', name: 'Other Page', component: OtherPage},
         {path: '/article/:id', name: 'Article Page', component: ArticlePage},
-        {path: '/testing/comments', name: 'Testing Comments page', component: TestCommentsPage},
-        {path: '/testing/articles', name: 'Testing articles page', component: TestArticlePage},
         {path: '/django-login', name: 'Django Login', component: DjangoLoginPage, meta: { redirect: 'http://127.0.0.1:8000/login/'}},
     ]
 })

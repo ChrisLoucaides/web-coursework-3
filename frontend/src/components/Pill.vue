@@ -1,6 +1,5 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
-import {left} from "@popperjs/core";
 
 export default defineComponent({
   name: "Pill",
